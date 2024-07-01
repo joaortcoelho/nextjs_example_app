@@ -62,8 +62,24 @@ async function getAllFromTable(table) {
         console.log(err);
     }
 }
+async function getAllFromTableByParameter(table, field, parameter) {
+    try {
+        let sql = `SELECT * FROM ${table} WHERE ${field} = `;
+        const values = [];
+        values.push(parameter);
+        const result = await query(sql, values);
+        return result;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
 server.get('/startups', async (request, reply) => {
     return await getAllFromTable("startup");
+});
+server.get('/startups/:id', async (request, reply) => {
+    const id = request.params.id;
+    return await getAllFromTableByParameter("Startup", "id", id);
 });
 server.get("/ping", async (request, reply) => {
     return "pong\n";
