@@ -1,9 +1,46 @@
 import fastify from "fastify";
+import * as mysql from 'mysql';
+
+const connection = {
+    host: 'localhost',
+    database: 'reactproject',
+    user: 'root',
+    password: 'joao123',
+};
+
+async function query(sql: string | mysql.QueryOptions, values = []) {
+    var con = mysql.createConnection(connection)
+    con.connect();
+    let promise = new Promise((resolve, reject) => {
+        con.query(sql, values, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+
+    });
+    con.end();
+    return promise;
+}
 
 const server = fastify();
 
-server.register(require('@fastify/mysql'),{
-  connectionString: 'mysql://root@localhost/mysql'
+// 
+
+async function getAllFromTable(table:string) {
+  try{
+    let sql = `SELECT * FROM ${table}`;
+    const result = await query(sql);
+    return result;
+  } catch (err){
+    console.log(err);
+  }
+}
+
+server.get('/startups', async (request, reply) => {
+  return await getAllFromTable("startup");
 })
 
 server.get("/ping", async (request, reply) => {
