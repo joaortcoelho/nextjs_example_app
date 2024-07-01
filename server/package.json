@@ -1,0 +1,22 @@
+{
+  "name": "reactnodeproject",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "João Coelho",
+  "license": "MIT",
+  "description": "React/Node Tutorial",
+  "dependencies": {
+    "@fastify/mysql": "^4.3.0",
+    "fastify": "^4.28.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.4",
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.2"
+  }
+}
