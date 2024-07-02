@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node index.js"
+    "start": "node out/index.js"
   },
   "keywords": [],
   "author": "João Coelho",
