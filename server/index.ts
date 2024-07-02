@@ -1,74 +1,18 @@
-import fastify from "fastify";
-import * as mysql from 'mysql';
+// src/index.ts
+import server from './app';
 
-const connection = {
-    host: 'localhost',
-    database: 'reactproject',
-    user: 'root',
-    password: 'joao123',
+const start = async () => {
+    const options = {
+        port: 8080,
+        host: 'localhost',
+    };
+    try {
+        await server.listen(options);
+        console.log('Server listening at http://localhost:8080');
+    } catch (err) {
+        console.error('Error starting server:', err);
+        process.exit(1);
+    }
 };
 
-async function query(sql: string | mysql.QueryOptions, values = []) {
-    var con = mysql.createConnection(connection)
-    con.connect();
-    let promise = new Promise((resolve, reject) => {
-        con.query(sql, values, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
-
-    });
-    con.end();
-    return promise;
-}
-
-const server = fastify();
-
-// 
-
-async function getAllFromTable(table:string) {
-  try{
-    let sql = `SELECT * FROM ${table}`;
-    const result = await query(sql);
-    return result;
-  } catch (err){
-    console.log(err);
-  }
-}
-
-async function getAllFromTableByParameter(table: string, field: string, parameter: string | number) {
-    try {
-        let sql = `SELECT * FROM ${table} WHERE ${field} = `;
-        const values: any = [];
-        values.push(parameter);
-        const result = await query(sql, values);
-        return result;
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-server.get('/startups', async (request, reply) => {
-  return await getAllFromTable("startup");
-})
-
-server.get('/startups/:id', async (request, reply) => {
-  const id = (request.params as any).id;
-  return await getAllFromTableByParameter("Startup", "id", id);
-})
-
-server.get("/ping", async (request, reply) => {
-  return "pong\n";
-});
-
-server.listen({ port: 8080 }, (err, address) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  console.log(`Server listening at ${address}`);
-});
-
+start();
