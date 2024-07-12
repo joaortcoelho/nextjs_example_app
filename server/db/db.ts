@@ -10,4 +10,17 @@ const pool = mysql.createPool({
   database: dbConfig.database,
 });
 
+export const executeQuery = <T>(query: string, params: any[] = []): Promise<T> => {
+  return new Promise<T>((resolve, reject) => {
+    pool.query(query, params, (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        reject(new Error('Database error'));
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
 export default pool;

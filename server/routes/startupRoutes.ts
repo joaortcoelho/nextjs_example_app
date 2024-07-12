@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { getAll, getById, add, update, remove } from '../controllers/mainController';
+import { getAll, getById, addToTable, updateInTable, removeFromTable } from '../controllers/mainController';
 import { Startup } from '../models/Startup';
-import favoritosRoutes from './favoritosRoutes';
 
 const startupRoutes = async (fastify: FastifyInstance) => {
   const table = 'startup';
@@ -43,7 +42,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
 
     try {
-      const id: number = await add(table, { nome });
+      const id: number = await addToTable(table, { nome });
       return { id };
     } catch (error) {
       fastify.log.error(error);
@@ -62,7 +61,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
 
     try {
-      await update(table, startupId, { nome });
+      await updateInTable(table, startupId, { nome });
       return { success: true };
     } catch (error) {
       fastify.log.error(error);
@@ -75,8 +74,8 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     const startupId = parseInt(id, 10);
 
     try {
-      await remove("favoritos", startupId); // remove fk first
-      await remove(table, startupId);
+      await removeFromTable("favoritos", startupId); // remove fk first
+      await removeFromTable(table, startupId);
       return { success: true };
     } catch (error) {
       fastify.log.error(error);

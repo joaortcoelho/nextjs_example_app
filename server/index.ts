@@ -1,18 +1,32 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify from 'fastify';
+import fastifyJwt from '@fastify/jwt';
+import fastifyBcrypt from 'fastify-bcrypt';
+import { dbConfig } from './config/dbConfig';
 import startupRoutes from './routes/startupRoutes';
-import utilizadorRoutes from './routes/utilizadorRoutes';
-import favoritosRoutes from './routes/favoritosRoutes';
-import pool from './db/db';
+import userRoutes from './routes/userRoutes';
 
-const server: FastifyInstance = Fastify({ 
-  logger: true,
-  connectionTimeout: 60000,
-  keepAliveTimeout: 60000,
+const server = Fastify({ logger: true });
+
+server.register(fastifyJwt, {
+  secret: 'supersecret' // Use an environment variable in production
+});
+
+server.register(fastifyBcrypt, {
+  saltWorkFactor: 12 // Adjust the cost factor as needed
+});
+
+// Decorate the Fastify instance
+server.decorate('authenticate', async (request, reply) => {
+  try {
+    await request.jwtVerify();
+  } catch (err) {
+    reply.send(err);
+  }
 });
 
 // Register routes
 server.register(startupRoutes);
-server.register(favoritosRoutes);
+server.register(userRoutes);
 
 // Health check route
 server.get('/', async () => {
@@ -22,13 +36,8 @@ server.get('/', async () => {
 // Start the server
 const start = async () => {
   try {
-    // Check database connection
-    await pool.query('SELECT 1 + 1');
-    server.log.info('Database connected successfully');
-
-    // If connected successfully, start the server
-    await server.listen({port: 8080});
-    server.log.info(`Server listening on port 8080`);
+    await server.listen({ port: dbConfig.port });
+    server.log.info(`Server listening on ${server.server.address()}`);
   } catch (err) {
     server.log.error('Error starting server:', err);
     process.exit(1);

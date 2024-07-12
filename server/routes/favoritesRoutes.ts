@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { getAll, getById, add, update, remove } from '../controllers/mainController';
-import { Favorito } from '../models/Favorito';
+import { getAll, getById, addToTable, updateInTable, removeFromTable } from '../controllers/mainController';
+import { Favorito } from '../models/Favorite';
 
 const favoritosRoutes = async (fastify: FastifyInstance) => {
   const table = 'favoritos';
@@ -26,7 +26,7 @@ const favoritosRoutes = async (fastify: FastifyInstance) => {
     const { id, id2 } = request.params as { id: string; id2: string };
 
     try {
-      await add(table, { id_utilizador: parseInt(id, 10), id_startup: parseInt(id2, 10) });
+      await addToTable(table, { id_utilizador: parseInt(id, 10), id_startup: parseInt(id2, 10) });
       return { success: true };
     } catch (error) {
       fastify.log.error(error);
@@ -39,7 +39,7 @@ const favoritosRoutes = async (fastify: FastifyInstance) => {
     const { id2 } = request.params as { id2: number };
 
     try {
-      await remove(table, id2);
+      await removeFromTable(table, id2);
       return { success: true };
     } catch (error) {
       fastify.log.error(error);

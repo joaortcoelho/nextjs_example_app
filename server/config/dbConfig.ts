@@ -3,4 +3,5 @@ export const dbConfig = {
     database: 'reactdb',
     user: 'react',
     password: 'react_123',
+    port: 8080
 };

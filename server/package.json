@@ -12,7 +12,9 @@
   "license": "MIT",
   "description": "React/Node Tutorial",
   "dependencies": {
+    "@fastify/jwt": "^8.0.1",
     "fastify": "^4.28.1",
+    "fastify-bcrypt": "^1.0.1",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
