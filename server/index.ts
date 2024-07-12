@@ -1,9 +1,15 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import startupRoutes from './routes/startups';
-import favoritosRoutes from './routes/favoritos';
+import startupRoutes from './routes/startupRoutes';
+import utilizadorRoutes from './routes/utilizadorRoutes';
+import favoritosRoutes from './routes/favoritosRoutes';
 import pool from './db/db';
+import { dbConfig } from './config/dbConfig';
 
-const server: FastifyInstance = Fastify({ logger: true });
+const server: FastifyInstance = Fastify({ 
+  logger: true,
+  connectionTimeout: 60000,
+  keepAliveTimeout: 60000,
+});
 
 // Register routes
 server.register(startupRoutes);
@@ -19,10 +25,11 @@ const start = async () => {
   try {
     // Check database connection
     await pool.query('SELECT 1 + 1');
+    server.log.info('Database connected successfully');
 
     // If connected successfully, start the server
-    await server.listen(3000);
-    server.log.info(`Server listening on ${server.server.address()}`);
+    await server.listen({port: 8080});
+    server.log.info(`Server listening on port 8080`);
   } catch (err) {
     server.log.error('Error starting server:', err);
     process.exit(1);

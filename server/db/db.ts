@@ -2,17 +2,12 @@
 import * as mysql from 'mysql';
 import { dbConfig } from '../config/dbConfig';
 
-const pool = mysql.createPool(dbConfig);
-
-export const query = (sql: string, values?: any[]): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    pool.query(sql, values, (err, results) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(results);
-    });
-  });
-};
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: dbConfig.host,
+  user: dbConfig.user,
+  password: dbConfig.password,
+  database: dbConfig.database,
+});
 
 export default pool;

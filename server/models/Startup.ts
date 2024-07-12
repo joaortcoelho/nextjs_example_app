@@ -1,4 +1,5 @@
+// models/Startup.ts
 export interface Startup {
-    id: number;
-    name: string;
+  id: number;
+  nome: string;
 }

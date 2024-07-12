@@ -1,5 +1,5 @@
-create database if not exists reactproject;
-use reactproject;
+create database if not exists reactdb;
+use reactdb;
 
 CREATE TABLE Startup (
     id INT AUTO_INCREMENT PRIMARY KEY,
