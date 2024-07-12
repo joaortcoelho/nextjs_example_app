@@ -1,6 +1,6 @@
 export const dbConfig = {
     host: 'localhost',
     database: 'reactdb',
-    user: 'root',
-    password: '',
+    user: 'react',
+    password: 'react_123',
 };

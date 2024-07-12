@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { getAll, getById, add, update, remove } from '../controllers/mainController';
 import { Startup } from '../models/Startup';
+import favoritosRoutes from './favoritosRoutes';
 
 const startupRoutes = async (fastify: FastifyInstance) => {
   const table = 'startup';
@@ -74,6 +75,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     const startupId = parseInt(id, 10);
 
     try {
+      await remove("favoritos", startupId); // remove fk first
       await remove(table, startupId);
       return { success: true };
     } catch (error) {

@@ -3,7 +3,6 @@ import startupRoutes from './routes/startupRoutes';
 import utilizadorRoutes from './routes/utilizadorRoutes';
 import favoritosRoutes from './routes/favoritosRoutes';
 import pool from './db/db';
-import { dbConfig } from './config/dbConfig';
 
 const server: FastifyInstance = Fastify({ 
   logger: true,

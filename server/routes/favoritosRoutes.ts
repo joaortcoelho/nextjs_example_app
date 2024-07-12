@@ -1,79 +1,45 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { getAll, getById, add, update, remove } from '../controllers/mainController';
-import { Favoritos } from '../models/Favoritos';
+import { Favorito } from '../models/Favorito';
 
 const favoritosRoutes = async (fastify: FastifyInstance) => {
   const table = 'favoritos';
 
-  fastify.get('/favoritos', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const favoritos: Favoritos[] = await getAll<Favoritos>(table);
-      return favoritos;
-    } catch (error) {
-      fastify.log.error(error);
-      reply.status(500).send({ error: 'Failed to fetch favoritos' });
-    }
-  });
-
-  fastify.get('/favoritos/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+  // Get all favorites for a specific user
+  fastify.get('/utilizadores/:id/favoritos', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
-    const favoritoId = parseInt(id, 10);
 
     try {
-      const favorito: Favoritos | undefined = await getById<Favoritos>(table, favoritoId);
-      if (!favorito) {
-        reply.status(404).send({ error: 'Favorito not found' });
-        return;
-      }
-      return favorito;
+      const favoritos: Favorito[] = await getAll<Favorito>(table);
+      // Filter by user ID if necessary
+      // Assuming favoritos table has a userId field
+      const userFavoritos = favoritos.filter(favorito => favorito.id_utilizador === parseInt(id, 10));
+      return userFavoritos;
     } catch (error) {
       fastify.log.error(error);
-      reply.status(500).send({ error: 'Failed to fetch favorito' });
+      reply.status(500).send({ error: 'Failed to fetch favoritos for user' });
     }
   });
 
-  fastify.post('/favoritos', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { nome } = request.body as { nome: string };
-
-    if (!nome) {
-      reply.status(400).send({ error: 'Name is required' });
-      return;
-    }
+   // Add a favorito for a specific user
+  fastify.post('/utilizadores/:id/favoritos/:id2', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id, id2 } = request.params as { id: string; id2: string };
 
     try {
-      const id: number = await add(table, { nome });
-      return { id };
+      await add(table, { id_utilizador: parseInt(id, 10), id_startup: parseInt(id2, 10) });
+      return { success: true };
     } catch (error) {
       fastify.log.error(error);
       reply.status(500).send({ error: 'Failed to add favorito' });
     }
   });
 
-  fastify.put('/favoritos/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
-    const favoritoId = parseInt(id, 10);
-    const { nome } = request.body as { nome: string };
-
-    if (!nome) {
-      reply.status(400).send({ error: 'Name is required' });
-      return;
-    }
+  // Delete a favorito for a specific user
+  fastify.delete('/utilizadores/:id/favoritos/:id2', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id2 } = request.params as { id2: number };
 
     try {
-      await update(table, favoritoId, { nome });
-      return { success: true };
-    } catch (error) {
-      fastify.log.error(error);
-      reply.status(500).send({ error: 'Failed to update favorito' });
-    }
-  });
-
-  fastify.delete('/favoritos/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
-    const favoritoId = parseInt(id, 10);
-
-    try {
-      await remove(table, favoritoId);
+      await remove(table, id2);
       return { success: true };
     } catch (error) {
       fastify.log.error(error);
@@ -81,5 +47,6 @@ const favoritosRoutes = async (fastify: FastifyInstance) => {
     }
   });
 };
+
 
 export default favoritosRoutes;

@@ -43,5 +43,8 @@ export const update = (table: string, id: number, data: object): Promise<void> =
 };
 
 export const remove = (table: string, id: number): Promise<void> => {
+  if (table === 'favoritos') {
+    return executeQuery<void>(`DELETE FROM favoritos WHERE id_startup = ? OR id_utilizador = ?`, [id, id])
+  }
   return executeQuery<void>(`DELETE FROM ${table} WHERE id = ?`, [id]);
 };
