@@ -1,4 +1,11 @@
-*/node_modules/
+# vscode
+.vscode/*
+!.vscode/launch.json
 *.code-workspace
+
+# node
+*/node_modules/
+
+# project
 */build/
 /tests/

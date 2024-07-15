@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { addToTable, getByUsername } from '../controllers/mainController';
+import main from '../controllers/mainController';
 import { User } from '../models/User';
+import bcrypt from 'bcrypt';
 
 export interface AuthRequest extends FastifyRequest {
   body: {
@@ -9,14 +10,18 @@ export interface AuthRequest extends FastifyRequest {
   };
 }
 
+const saltRounds = 10;
+
 export const register = async (request: AuthRequest, reply: FastifyReply) => {
   const { username, password } = request.body;
 
   try {
-    const hashedPassword = await request.server.bcrypt.hash(password);
-
-    await addToTable("utilizador", { username: username, password: hashedPassword});
+    // hash password and if ok add to table
+    const hashedPassword = await bcrypt.hash(password, saltRounds, function(err, hash){
+      main.addToTable("utilizador", { username: username, password: hashedPassword});
+    });
     reply.status(201).send({ success: true });
+
   } catch (error) {
     request.server.log.error(error);
     reply.status(500).send({ error: 'Failed to register user' });
@@ -27,20 +32,22 @@ export const login = async (request: AuthRequest, reply: FastifyReply) => {
   const { username, password } = request.body;
 
   try {
-    const user = await getByUsername<User>('utilizadores', username);
-
+    const user = await main.getByUsername<User>('utilizador', username);
     if (!user) {
-      return reply.status(401).send({ error: 'Invalid username or password' });
+      return reply.status(401).send({ error: 'User not found' });
     }
 
-    const validPassword = await request.server.bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return reply.status(401).send({ error: 'Invalid username or password' });
+    // Compare the provided password with the hashed password
+    let passwordHash = await bcrypt.hash(user.password, saltRounds);
+    const isPasswordValid = await bcrypt.compare(user.password, passwordHash);
+    if (!isPasswordValid) {
+      return reply.status(401).send({ error: 'Invalid password' });
     }
 
+    // Generate a JWT token
     const token = request.server.jwt.sign({ id: user.id, username: user.username });
-
     reply.send({ token });
+
   } catch (error) {
     request.server.log.error(error);
     reply.status(500).send({ error: 'Failed to login user' });

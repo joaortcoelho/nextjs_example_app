@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   database: dbConfig.database,
 });
 
-export const executeQuery = <T>(query: string, params: any[] = []): Promise<T> => {
+const executeQuery = <T>(query: string, params: any[] = []): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     pool.query(query, params, (error, results) => {
       if (error) {
@@ -23,4 +23,9 @@ export const executeQuery = <T>(query: string, params: any[] = []): Promise<T> =
   });
 };
 
-export default pool;
+const functions = {
+  pool,
+  executeQuery
+}
+
+export default functions;

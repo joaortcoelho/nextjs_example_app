@@ -1,22 +1,17 @@
 import Fastify from 'fastify';
-import fastifyJwt from '@fastify/jwt';
-import fastifyBcrypt from 'fastify-bcrypt';
+import jwt from '@fastify/jwt';
 import { dbConfig } from './config/dbConfig';
 import startupRoutes from './routes/startupRoutes';
 import userRoutes from './routes/userRoutes';
 
 const server = Fastify({ logger: true });
 
-server.register(fastifyJwt, {
+server.register(jwt, {
   secret: 'supersecret' // Use an environment variable in production
 });
 
-server.register(fastifyBcrypt, {
-  saltWorkFactor: 12 // Adjust the cost factor as needed
-});
-
 // Decorate the Fastify instance
-server.decorate('authenticate', async (request, reply) => {
+server.decorate('authenticate', async (request: { jwtVerify: () => any; }, reply: { send: (arg0: unknown) => void; }) => {
   try {
     await request.jwtVerify();
   } catch (err) {
