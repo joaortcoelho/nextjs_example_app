@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 import jwt from '@fastify/jwt';
-import { dbConfig } from './config/dbConfig';
+import dbConfig from './config/dbConfig';
 import startupRoutes from './routes/startupRoutes';
 import userRoutes from './routes/userRoutes';
 

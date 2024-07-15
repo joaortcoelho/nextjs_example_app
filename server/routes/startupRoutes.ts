@@ -1,14 +1,15 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { getAll, getById, addToTable, updateInTable, removeFromTable } from '../controllers/mainController';
-import { Startup } from '../models/Startup';
+import main from '../controllers/mainController';
+import Startup from '../models/Startup';
 
 const startupRoutes = async (fastify: FastifyInstance) => {
   const table = 'startup';
 
+  // GET: startups
   fastify.get('/startups', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       fastify.log.info('Fetching all startups');
-      const startups: Startup[] = await getAll<Startup>(table);
+      const startups: Startup[] = await main.getAll<Startup>(table);
       return startups;
     } catch (error) {
       fastify.log.error(error);
@@ -16,12 +17,13 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  // GET: get startup by id
   fastify.get('/startups/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
     const startupId = parseInt(id, 10);
 
     try {
-      const startup: Startup | undefined = await getById<Startup>(table, startupId);
+      const startup: Startup | undefined = await main.getById<Startup>(table, startupId);
       if (!startup) {
         reply.status(404).send({ error: 'Startup not found' });
         return;
@@ -33,6 +35,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  // POST: add startup
   fastify.post('/startups', async (request: FastifyRequest, reply: FastifyReply) => {
     const { nome } = request.body as { nome: string };
 
@@ -42,7 +45,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
 
     try {
-      const id: number = await addToTable(table, { nome });
+      const id: number = await main.addToTable(table, { nome });
       return { id };
     } catch (error) {
       fastify.log.error(error);
@@ -50,6 +53,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  // PUT: update startup name by id
   fastify.put('/startups/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
     const startupId = parseInt(id, 10);
@@ -61,7 +65,7 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
 
     try {
-      await updateInTable(table, startupId, { nome });
+      await main.updateInTable(table, startupId, { nome });
       return { success: true };
     } catch (error) {
       fastify.log.error(error);
@@ -69,13 +73,14 @@ const startupRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  // DELETE: delete startup by id
   fastify.delete('/startups/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
     const startupId = parseInt(id, 10);
 
     try {
-      await removeFromTable("favoritos", startupId); // remove fk first
-      await removeFromTable(table, startupId);
+      await main.removeFromTable("favoritos", startupId); // remove fk first
+      await main.removeFromTable(table, startupId);
       return { success: true };
     } catch (error) {
       fastify.log.error(error);

@@ -1,3 +1,5 @@
+/** CREATE database script **/
+
 create database if not exists reactdb;
 use reactdb;
 

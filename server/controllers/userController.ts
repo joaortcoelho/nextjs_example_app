@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import main from '../controllers/mainController';
-import { User } from '../models/User';
+import User from '../models/User';
 import bcrypt from 'bcrypt';
 
 export interface AuthRequest extends FastifyRequest {
@@ -12,6 +12,7 @@ export interface AuthRequest extends FastifyRequest {
 
 const saltRounds = 10;
 
+// Register: username, password
 export const register = async (request: AuthRequest, reply: FastifyReply) => {
   const { username, password } = request.body;
 
@@ -28,6 +29,7 @@ export const register = async (request: AuthRequest, reply: FastifyReply) => {
   }
 };
 
+// Login: username, password
 export const login = async (request: AuthRequest, reply: FastifyReply) => {
   const { username, password } = request.body;
 
@@ -54,6 +56,7 @@ export const login = async (request: AuthRequest, reply: FastifyReply) => {
   }
 };
 
+// User profile
 export const profile = async (request: FastifyRequest, reply: FastifyReply) => {
   reply.send(request.user);
 };

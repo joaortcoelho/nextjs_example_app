@@ -1,5 +1,7 @@
 // models/Startup.ts
-export interface Startup {
+interface Startup {
   id: number;
   nome: string;
 }
+
+export default Startup;

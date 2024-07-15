@@ -1,6 +1,6 @@
 // src/db.ts
 import * as mysql from 'mysql';
-import { dbConfig } from '../config/dbConfig';
+import dbConfig from '../config/dbConfig';
 
 const pool = mysql.createPool({
   connectionLimit: 10,
