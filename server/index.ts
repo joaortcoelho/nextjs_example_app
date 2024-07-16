@@ -1,17 +1,17 @@
-import Fastify from 'fastify';
+import fastify from 'fastify';
 import jwt from '@fastify/jwt';
 import dbConfig from './config/dbConfig';
 import startupRoutes from './routes/startupRoutes';
 import userRoutes from './routes/userRoutes';
 
-const server = Fastify({ logger: true });
+const server = fastify({ logger: true });
 
 server.register(jwt, {
   secret: 'supersecret' // Use an environment variable in production
 });
 
 // Decorate the Fastify instance
-server.decorate('authenticate', async (request: { jwtVerify: () => any; }, reply: { send: (arg0: unknown) => void; }) => {
+server.decorate('authenticate', async (request, reply) => {
   try {
     await request.jwtVerify();
   } catch (err) {
@@ -29,14 +29,12 @@ server.get('/', async () => {
 });
 
 // Start the server
-const start = async () => {
-  try {
-    await server.listen({ port: dbConfig.port });
-    server.log.info(`Server listening on ${server.server.address()}`);
-  } catch (err) {
-    server.log.error('Error starting server:', err);
-    process.exit(1);
-  }
-};
+server.listen({ port: 8080 }, (err, address) => {
+    if (err) {
+        console.error(err)
+        process.exit(1)
+    }
+    console.log(`http://localhost:8080`)
+})
 
-start();
+export default server;

@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import main from '../controllers/mainController';
 import User from '../models/User';
 import bcrypt from 'bcrypt';
@@ -10,17 +10,20 @@ export interface AuthRequest extends FastifyRequest {
   };
 }
 
-const saltRounds = 10;
-
 // Register: username, password
 export const register = async (request: AuthRequest, reply: FastifyReply) => {
   const { username, password } = request.body;
 
   try {
-    // hash password and if ok add to table
-    const hashedPassword = await bcrypt.hash(password, saltRounds, function(err, hash){
-      main.addToTable("utilizador", { username: username, password: hashedPassword});
-    });
+    const existingUser = await main.getByUsername<User>("utilizador", username);
+    if (existingUser) {
+      return reply.status(409).send({ error: "Username already taken" });
+    }
+
+    // Hash password and add User to table
+    const hash = await bcrypt.hash(password, 10);
+    main.addToTable("utilizador", { username: username, password: hash });
+
     reply.status(201).send({ success: true });
 
   } catch (error) {
@@ -39,9 +42,10 @@ export const login = async (request: AuthRequest, reply: FastifyReply) => {
       return reply.status(401).send({ error: 'User not found' });
     }
 
+    console.log(bcrypt.hash("test",10));
+
     // Compare the provided password with the hashed password
-    let passwordHash = await bcrypt.hash(user.password, saltRounds);
-    const isPasswordValid = await bcrypt.compare(user.password, passwordHash);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return reply.status(401).send({ error: 'Invalid password' });
     }
@@ -57,6 +61,6 @@ export const login = async (request: AuthRequest, reply: FastifyReply) => {
 };
 
 // User profile
-export const profile = async (request: FastifyRequest, reply: FastifyReply) => {
+export const profile = async (request: any, reply: any) => {
   reply.send(request.user);
 };
