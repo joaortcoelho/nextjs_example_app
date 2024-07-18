@@ -1,19 +1,22 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import * as userController from '../controllers/userController';
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import user from "../controllers/userController";
 
 const userRoutes = async (fastify: FastifyInstance) => {
   // Register
-  fastify.post('/register', (request: FastifyRequest, reply: FastifyReply) => {
-    return userController.register(request as userController.AuthRequest, reply);
+  fastify.post("/register", (request: FastifyRequest, reply: FastifyReply) => {
+    return user.register(request, reply);
   });
   // Login
-  fastify.post('/login', (request: FastifyRequest, reply: FastifyReply) => {
-    return userController.login(request as userController.AuthRequest, reply);
+  fastify.post("/login", (request: FastifyRequest, reply: FastifyReply) => {
+    return user.login(request, reply);
   });
   // User Profile
-  fastify.get('/profile', { preValidation: [fastify.authenticate] }, (request: FastifyRequest, reply: FastifyReply) => {
-    return userController.profile(request, reply);
-  });
+  fastify.get(
+    "/profile",
+    (request: FastifyRequest, reply: FastifyReply) => {
+      return user.profile(request, reply);
+    }
+  );
 };
 
 export default userRoutes;
