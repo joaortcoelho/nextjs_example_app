@@ -1,10 +1,9 @@
-import React from 'react';
-import { Button } from 'antd';
+import { GetServerSideProps } from 'next';
 
-const Home = () => (
-  <div className="App">
-    <Button type="primary">Button</Button>
-  </div>
-);
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { redirect: { destination: `/home`, permanent: false } };
+};
 
-export default Home;
+export default function Index() {
+  return null;
+}
