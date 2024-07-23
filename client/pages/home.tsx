@@ -5,9 +5,12 @@ const { Title, Paragraph, Text, Link } = Typography;
 
 const Home: React.FC = () => {
   return (
-    <div className="Home">
-      <Title>Bem-vindo!</Title>
-    </div>
+    <>
+      <div className="Home">
+        <Title>Bem-vindo!</Title>
+      </div>
+      <Divider />
+    </>
   );
 };
 
