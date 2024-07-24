@@ -1,7 +1,7 @@
 import { Divider, Space, Typography } from 'antd';
 import React from 'react';
 
-const { Title, Paragraph, Text, Link } = Typography;
+const { Title } = Typography;
 
 const Home: React.FC = () => {
   return (

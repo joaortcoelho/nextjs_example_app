@@ -2,27 +2,47 @@ import React from 'react';
 import { Menu, MenuProps, Image } from 'antd';
 import { useRouter } from 'next/router';
 import MenuItem from 'antd/es/menu/MenuItem';
-import { LoginOutlined, UserOutlined, HomeOutlined } from '@ant-design/icons';
+import { LoginOutlined, UserOutlined, HomeOutlined, UnorderedListOutlined, StarOutlined } from '@ant-design/icons';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
   {
     key: 'home',
-    label: 'Home',
+    label: 'Início',
     type: 'item',
     icon: <HomeOutlined />,
   },
   {
     key: 'login',
-    label: 'Login',
+    label: 'Entrar',
     type: 'item',
     icon: <LoginOutlined />,
   },
   {
     key: 'register',
-    label: 'Register',
+    label: 'Criar conta',
     type: 'item',
     icon: <UserOutlined />,
+  },
+];
+const itemsLogged: MenuItem[] = [
+  {
+    key: 'home',
+    label: 'Início',
+    type: 'item',
+    icon: <HomeOutlined />,
+  },
+  {
+    key: 'startups',
+    label: 'Startups',
+    type: 'item',
+    icon: <UnorderedListOutlined />,
+  },
+  {
+    key: 'favoritos',
+    label: 'Favoritos',
+    type: 'item',
+    icon: <StarOutlined />,
   },
 ];
 
@@ -34,14 +54,14 @@ type RouteInfo = {
 const getRoute = (pathname: string): RouteInfo => {
   switch (pathname) {
     case '/home':
-      return { title: '' };
+      return { title: 'Home', menuKey: 'home' };
     case '/startups':
       return { title: 'Startups', menuKey: 'startups' };
     case '/login':
       return { title: 'Login', menuKey: 'login' };
     case '/register':
       return { title: 'Register', menuKey: 'register' };
-    case '[id]/favoritos':
+    case '/favoritos':
       return { title: 'Favoritos', menuKey: 'favoritos' };
     default:
       throw Error('No route declarared with the key ${pathname}.');
@@ -64,7 +84,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        defaultSelectedKeys={[route.menuKey as string]}
+        defaultSelectedKeys={[route.title as string]}
         mode="horizontal"
         items={items}
       />
