@@ -2,7 +2,15 @@ import React from 'react';
 import { Menu, MenuProps, Image } from 'antd';
 import { useRouter } from 'next/router';
 import MenuItem from 'antd/es/menu/MenuItem';
-import { LoginOutlined, UserOutlined, HomeOutlined, UnorderedListOutlined, StarOutlined } from '@ant-design/icons';
+import {
+  LoginOutlined,
+  UserOutlined,
+  HomeOutlined,
+  UnorderedListOutlined,
+  StarOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
+import { useUser } from '@/context/userContext';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
@@ -20,7 +28,7 @@ const items: MenuItem[] = [
   },
   {
     key: 'register',
-    label: 'Criar conta',
+    label: 'Registar',
     type: 'item',
     icon: <UserOutlined />,
   },
@@ -44,10 +52,20 @@ const itemsLogged: MenuItem[] = [
     type: 'item',
     icon: <StarOutlined />,
   },
+  {
+    key: 'logout',
+    label: 'Terminar sessão',
+    type: 'item',
+    icon: <LogoutOutlined />,
+    danger: true,
+  },
 ];
 
 const Nav: React.FC = () => {
   const router = useRouter();
+
+  const { isLoggedIn } = useUser();
+  const menuItems = isLoggedIn ? itemsLogged : items;
 
   const onClick: MenuProps['onClick'] = (e) => {
     router.push(e.key); // use router to push key in MenuItem
@@ -63,7 +81,7 @@ const Nav: React.FC = () => {
         style={{ flex: 1, minWidth: 0 }}
         defaultSelectedKeys={[router.pathname]}
         mode="horizontal"
-        items={items}
+        items={menuItems}
       />
     </>
   );

@@ -1,26 +1,27 @@
 import { useRouter } from 'next/router';
-import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input } from 'antd';
-import BreadcrumbItem from 'antd/es/breadcrumb/BreadcrumbItem';
+import { Breadcrumb, Button, Divider, Form, FormProps, Input } from 'antd';
 
 type FieldType = {
   username?: string;
   password?: string;
+  confPass?: string;
   remember?: boolean;
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
     try {
-      const { username, password } = values;
+      const { username, password, confirm } = values;
 
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           username,
           password,
+          confirm,
         },
         body: JSON.stringify({}),
       });
@@ -29,10 +30,10 @@ export default function LoginPage() {
 
       if (data.success) {
         localStorage.setItem('user', JSON.stringify(data));
-        // handle login success
-        router.push('/');
+        // handle registration success
+        router.push('/login');
       } else {
-        // handle login failure
+        // handle registration failure
         console.error(data.error);
       }
     } catch (error) {
@@ -42,14 +43,12 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="Login">
-        <Breadcrumb style={{ fontSize: 18 }}>
-          <BreadcrumbItem>Entrar</BreadcrumbItem>
-        </Breadcrumb>
+      <div className="Registar">
+        <Breadcrumb style={{ fontSize: 18 }} items={[{ title: 'Registar' }]} />
       </div>
       <Divider />
       <Form
-        name="basic"
+        name="register"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
@@ -60,7 +59,7 @@ export default function LoginPage() {
         <Form.Item<FieldType>
           label="Utilizador"
           name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: 'Por favor, introduza um nome de utilizador!' }]}
         >
           <Input />
         </Form.Item>
@@ -68,18 +67,37 @@ export default function LoginPage() {
         <Form.Item<FieldType>
           label="Palavra-passe"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: 'Por favor, introduza uma palavra-passe!' }]}
         >
           <Input.Password />
         </Form.Item>
 
-        <Form.Item<FieldType> name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
-          <Checkbox>Lembrar-se de mim</Checkbox>
+        <Form.Item
+          name="confirm"
+          label="Confirmar palavra-passe"
+          dependencies={['password']}
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, confirme a sua palavra-passe!',
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('As palavras-passe não correspondem!'));
+              },
+            }),
+          ]}
+        >
+          <Input.Password />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
-            Entrar
+            Submeter
           </Button>
         </Form.Item>
       </Form>

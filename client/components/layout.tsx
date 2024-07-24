@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route } from 'next';
 import { Divider, MenuProps, Space, Typography, Breadcrumb, Flex, Layout, LayoutProps, theme, Menu } from 'antd';
 import Nav from './navbar';
 

@@ -11,6 +11,13 @@ export default async function registerHandler(req: NextApiRequest, res: NextApiR
     const password = req.headers.password as string;
     const confPass = req.headers.confpass as string;
 
+    console.log('Request received:', { method: req.method, headers: req.headers });
+
+    if (!username || !password || !confPass) {
+      res.status(400).json({ error: 'Username and password are required.' });
+      return;
+    }
+
     if (password !== confPass) {
       res.status(400).json({ error: 'Passwords do not match.' });
       return;
@@ -23,13 +30,12 @@ export default async function registerHandler(req: NextApiRequest, res: NextApiR
         username,
         password,
       },
-      body: JSON.stringify({}), // Body is empty as credentials are in headers
+      body: JSON.stringify({}),
     });
 
     const data = await response.json();
 
     if (response.ok && data.token) {
-      // localStorage should be handled on the client side
       res.status(200).json({ success: true, token: data.token });
     } else {
       res.status(400).json({ error: data.message || 'Registration failed.' });
