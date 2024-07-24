@@ -1,6 +1,5 @@
-import { FormEvent } from 'react';
 import { useRouter } from 'next/router';
-import { Breadcrumb, Button, Divider, Form, Input, Typography } from 'antd';
+import { Breadcrumb, Button, Divider, Form, FormProps, Input } from 'antd';
 import BreadcrumbItem from 'antd/es/breadcrumb/BreadcrumbItem';
 
 type FieldType = {
@@ -13,24 +12,35 @@ type FieldType = {
 export default function RegisterPage() {
   const router = useRouter();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const formData = new FormData(event.currentTarget);
-    const username = formData.get('username');
-    const password = formData.get('password');
-    const confPass = formData.get('confPass');
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
+    try {
+      const { username, password, confPass } = values;
 
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, confPass }),
-    });
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          username,
+          password,
+          confpass: confPass,
+        },
+        body: JSON.stringify({}),
+      });
 
-    if (response.ok) {
-      router.push('/login');
-    } else {
-      // Handle errors
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('user', JSON.stringify(data));
+        // handle registration success
+        router.push('/login');
+      } else {
+        // handle registration failure
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Could not fetch data.', error);
     }
-  }
+  };
 
   return (
     <>
@@ -46,7 +56,7 @@ export default function RegisterPage() {
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
-        onFinish={handleSubmit}
+        onFinish={onFinish}
         autoComplete="off"
       >
         <Form.Item<FieldType>

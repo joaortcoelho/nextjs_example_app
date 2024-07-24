@@ -1,6 +1,5 @@
-import { FormEvent } from 'react';
 import { useRouter } from 'next/router';
-import { Breadcrumb, Button, Checkbox, Divider, Form, Input } from 'antd';
+import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input } from 'antd';
 import BreadcrumbItem from 'antd/es/breadcrumb/BreadcrumbItem';
 
 type FieldType = {
@@ -12,23 +11,34 @@ type FieldType = {
 export default function LoginPage() {
   const router = useRouter();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const formData = new FormData(event.currentTarget);
-    const username = formData.get('username');
-    const password = formData.get('password');
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
+    try {
+      const { username, password } = values;
 
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          username,
+          password,
+        },
+        body: JSON.stringify({}),
+      });
 
-    if (response.ok) {
-      router.push('home');
-    } else {
-      // Handle errors
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('user', JSON.stringify(data));
+        // handle login success
+        router.push('/');
+      } else {
+        // handle login failure
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Could not fetch data.', error);
     }
-  }
+  };
 
   return (
     <>
@@ -44,7 +54,7 @@ export default function LoginPage() {
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
-        onFinish={handleSubmit}
+        onFinish={onFinish}
         autoComplete="off"
       >
         <Form.Item<FieldType>

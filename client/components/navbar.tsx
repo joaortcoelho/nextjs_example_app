@@ -46,31 +46,8 @@ const itemsLogged: MenuItem[] = [
   },
 ];
 
-type RouteInfo = {
-  title: string | null;
-  icon?: React.ReactNode;
-  menuKey?: string;
-};
-const getRoute = (pathname: string): RouteInfo => {
-  switch (pathname) {
-    case '/home':
-      return { title: 'Home', menuKey: 'home' };
-    case '/startups':
-      return { title: 'Startups', menuKey: 'startups' };
-    case '/login':
-      return { title: 'Login', menuKey: 'login' };
-    case '/register':
-      return { title: 'Register', menuKey: 'register' };
-    case '/favoritos':
-      return { title: 'Favoritos', menuKey: 'favoritos' };
-    default:
-      throw Error('No route declarared with the key ${pathname}.');
-  }
-};
-
 const Nav: React.FC = () => {
   const router = useRouter();
-  const route = getRoute(router.pathname);
 
   const onClick: MenuProps['onClick'] = (e) => {
     router.push(e.key); // use router to push key in MenuItem
@@ -84,7 +61,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        defaultSelectedKeys={[route.title as string]}
+        defaultSelectedKeys={[router.pathname]}
         mode="horizontal"
         items={items}
       />
