@@ -4,7 +4,7 @@ import { Breadcrumb, Button, Divider, Form, FormProps, Input } from 'antd';
 type FieldType = {
   username?: string;
   password?: string;
-  confPass?: string;
+  confirm?: string;
   remember?: boolean;
 };
 

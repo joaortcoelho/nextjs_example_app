@@ -9,16 +9,16 @@ export default async function registerHandler(req: NextApiRequest, res: NextApiR
   try {
     const username = req.headers.username as string;
     const password = req.headers.password as string;
-    const confPass = req.headers.confpass as string;
+    const confirm = req.headers.confirm as string;
 
     console.log('Request received:', { method: req.method, headers: req.headers });
 
-    if (!username || !password || !confPass) {
+    if (!username || !password || !confirm) {
       res.status(400).json({ error: 'Username and password are required.' });
       return;
     }
 
-    if (password !== confPass) {
+    if (password !== confirm) {
       res.status(400).json({ error: 'Passwords do not match.' });
       return;
     }
@@ -35,8 +35,8 @@ export default async function registerHandler(req: NextApiRequest, res: NextApiR
 
     const data = await response.json();
 
-    if (response.ok && data.token) {
-      res.status(200).json({ success: true, token: data.token });
+    if (data) {
+      res.status(200).json({ success: true });
     } else {
       res.status(400).json({ error: data.message || 'Registration failed.' });
     }
