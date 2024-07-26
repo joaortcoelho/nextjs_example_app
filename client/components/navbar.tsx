@@ -62,11 +62,6 @@ const itemsLogged: MenuItem[] = [
   },
 ];
 
-type RouteInfo = {
-  title: string;
-  menuKey?: string;
-};
-
 const Nav: React.FC = () => {
   const router = useRouter();
 
@@ -94,7 +89,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        defaultSelectedKeys={['home']}
+        //defaultSelectedKeys={}
         mode="horizontal"
         items={menuItems}
       />

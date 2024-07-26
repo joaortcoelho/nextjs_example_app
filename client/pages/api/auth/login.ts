@@ -42,18 +42,3 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
   }
 }
 
-export const getCurUser = () => {
-  if (typeof window !== 'undefined') {
-    const user = localStorage.getItem('token');
-    if (user) {
-      return JSON.parse(user);
-    }
-    return user;
-  }
-  return;
-};
-
-export const logout = () => {
-  localStorage.clear;
-  return 200;
-};

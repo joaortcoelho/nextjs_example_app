@@ -1,4 +1,3 @@
-import { getCurUser } from '@/pages/api/auth/login';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface SessionContextType {
@@ -36,3 +35,19 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
 };
 
 export const useSession = (): SessionContextType => useContext(SessionContext);
+
+export const getCurUser = () => {
+  if (typeof window !== 'undefined') {
+    const user = localStorage.getItem('token');
+    if (user) {
+      return JSON.parse(user);
+    }
+    return user;
+  }
+  return;
+};
+
+export const endSession = () => {
+  localStorage.clear;
+  return 200;
+};
