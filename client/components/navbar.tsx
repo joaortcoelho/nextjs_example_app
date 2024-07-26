@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, Image } from 'antd';
 import { useRouter } from 'next/router';
+import { useSession } from '@/context/session';
 import {
   LoginOutlined,
   UserOutlined,
@@ -9,7 +10,6 @@ import {
   StarOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { useSession } from '@/context/session';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -62,8 +62,14 @@ const itemsLogged: MenuItem[] = [
   },
 ];
 
+type RouteInfo = {
+  title: string;
+  menuKey?: string;
+};
+
 const Nav: React.FC = () => {
   const router = useRouter();
+
   const { isLoggedIn, setIsLoggedIn } = useSession();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(isLoggedIn ? itemsLogged : items);
 
@@ -74,7 +80,7 @@ const Nav: React.FC = () => {
   const onClick: MenuProps['onClick'] = (e) => {
     if (e.key === 'logout') {
       localStorage.removeItem('token');
-      setIsLoggedIn(false); // Update state
+      setIsLoggedIn(false); // Update state on logout
       router.push('/login');
     } else {
       router.push(e.key);

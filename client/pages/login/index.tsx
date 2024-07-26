@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
-import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input } from 'antd';
+import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input, message } from 'antd';
 import { useSession } from '@/context/session';
+import { useForm } from 'antd/es/form/Form';
+import { useEffect } from 'react';
 
 type FieldType = {
   username?: string;
@@ -11,10 +13,20 @@ type FieldType = {
 export default function LoginPage() {
   const router = useRouter();
   const session = useSession();
+  const [form] = useForm();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('storedUser');
+    const storedRememberCheck = localStorage.getItem('rememberMe') === 'true';
+
+    if (storedRememberCheck) {
+      form.setFieldsValue({ username: storedUser, remember: storedRememberCheck });
+    }
+  }, [form]);
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
     try {
-      const { username, password } = values;
+      const { username, password, remember } = values;
 
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -31,14 +43,29 @@ export default function LoginPage() {
       if (data.success) {
         localStorage.setItem('token', JSON.stringify(data.token));
         session.setIsLoggedIn(true);
+
+        if (remember) {
+          localStorage.setItem('storedUser', username);
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('storedUser');
+          localStorage.removeItem('rememberMe');
+        }
+
         router.push('/');
       } else {
         // handle login failure
         console.error(data.error);
+        message.error('Autenticação inválida. Por favor verifique o seu nome de utilizador e a sua palavra-passe.');
       }
     } catch (error) {
       console.error('Could not fetch data.', error);
+      message.error('Ocorreu um erro na autenticação. Tente novamente.');
     }
+  };
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = async () => {
+    message.open({ type: 'error', content: 'Erro ao submeter o formulário.' });
   };
 
   return (
@@ -48,18 +75,20 @@ export default function LoginPage() {
       </div>
       <Divider />
       <Form
+        form={form}
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
+        initialValues={{ remember: false }}
         onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<FieldType>
           label="Utilizador"
           name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: 'Por favor, introduza o seu nome de utilizador!' }]}
         >
           <Input />
         </Form.Item>
@@ -67,7 +96,7 @@ export default function LoginPage() {
         <Form.Item<FieldType>
           label="Palavra-passe"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: 'Por favor, introduza a sua palavra-passe!' }]}
         >
           <Input.Password />
         </Form.Item>

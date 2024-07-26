@@ -3,15 +3,15 @@ import React from 'react';
 
 const { Title } = Typography;
 
-const Startups: React.FC = () => {
+const Favoritos: React.FC = () => {
   return (
     <>
-      <div className="Startups">
-        <Title>Startups</Title>
+      <div className="Favoritos">
+        <Title>Favoritos</Title>
       </div>
       <Divider />
     </>
   );
 };
 
-export default Startups;
+export default Favoritos;
