@@ -29,6 +29,10 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
 
     if (response.ok && data.token) {
       res.status(200).json({ success: true, token: data.token });
+      if (typeof window !== 'undefined') {
+        // store token in browser
+        localStorage.setItem('token', JSON.stringify(data));
+      }
     } else {
       res.status(401).json({ error: 'Invalid credentials.' });
     }
@@ -38,7 +42,18 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
   }
 }
 
-export const logoutHandler = () => {
+export const getCurUser = () => {
+  if (typeof window !== 'undefined') {
+    const user = localStorage.getItem('token');
+    if (user) {
+      return JSON.parse(user);
+    }
+    return user;
+  }
+  return;
+};
+
+export const logout = () => {
   localStorage.clear;
   return 200;
 };

@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, Image } from 'antd';
 import { useRouter } from 'next/router';
-import MenuItem from 'antd/es/menu/MenuItem';
 import {
   LoginOutlined,
   UserOutlined,
@@ -10,9 +9,10 @@ import {
   StarOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { useUser } from '@/context/userContext';
+import { useSession } from '@/context/session';
 
 type MenuItem = Required<MenuProps>['items'][number];
+
 const items: MenuItem[] = [
   {
     key: 'home',
@@ -33,6 +33,7 @@ const items: MenuItem[] = [
     icon: <UserOutlined />,
   },
 ];
+
 const itemsLogged: MenuItem[] = [
   {
     key: 'home',
@@ -63,13 +64,21 @@ const itemsLogged: MenuItem[] = [
 
 const Nav: React.FC = () => {
   const router = useRouter();
+  const { isLoggedIn, setIsLoggedIn } = useSession();
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(isLoggedIn ? itemsLogged : items);
 
-  const { isLoggedIn } = useUser();
-  const menuItems = isLoggedIn ? itemsLogged : items;
+  useEffect(() => {
+    setMenuItems(isLoggedIn ? itemsLogged : items);
+  }, [isLoggedIn]);
 
   const onClick: MenuProps['onClick'] = (e) => {
-    router.push(e.key); // use router to push key in MenuItem
-    console.log('click', e);
+    if (e.key === 'logout') {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false); // Update state
+      router.push('/login');
+    } else {
+      router.push(e.key);
+    }
   };
 
   return (
@@ -79,7 +88,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        defaultSelectedKeys={[router.pathname]}
+        defaultSelectedKeys={['home']}
         mode="horizontal"
         items={menuItems}
       />

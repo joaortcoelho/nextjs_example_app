@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input } from 'antd';
+import { useSession } from '@/context/session';
 
 type FieldType = {
   username?: string;
@@ -9,6 +10,7 @@ type FieldType = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const session = useSession();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
     try {
@@ -27,8 +29,8 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        localStorage.setItem('user', JSON.stringify(data));
-        // handle login success
+        localStorage.setItem('token', JSON.stringify(data.token));
+        session.setIsLoggedIn(true);
         router.push('/');
       } else {
         // handle login failure
