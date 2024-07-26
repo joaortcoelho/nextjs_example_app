@@ -5,7 +5,6 @@ import { getCurUser, useSession } from './context/session';
 export async function middleware(request: NextRequest) {
   const session = useSession; //todo: returning undefined
   const isLoggedIn = !!session;
-  console.log(isLoggedIn);
 
   if (request.nextUrl.pathname == '/logout') {
     return NextResponse.redirect(new URL('/', request.url));
