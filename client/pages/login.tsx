@@ -17,11 +17,11 @@ export default function LoginPage() {
   const [form] = useForm();
 
   useEffect(() => {
-    const rememberUser = getCookie('rememberUser');
+    const user = getCookie('username');
     const rememberMe = getCookie('rememberMe') === 'true';
 
     if (rememberMe) {
-      form.setFieldsValue({ username: rememberUser, remember: rememberMe });
+      form.setFieldsValue({ username: user, remember: rememberMe });
     }
   }, [form]);
 
@@ -33,8 +33,8 @@ export default function LoginPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          username,
-          password,
+          username: username,
+          password: password,
         },
         body: JSON.stringify({}),
       });
@@ -43,13 +43,13 @@ export default function LoginPage() {
 
       if (data.success) {
         setCookie('token', data.token, { maxAge: 60 * 60 * 24, secure: true, path: '/', sameSite: 'strict' });
+        setCookie('username', username);
         session.setIsLoggedIn(true);
 
         if (remember) {
-          setCookie('rememberUser', username, { maxAge: 60 * 60 * 24 });
           setCookie('rememberMe', 'true', { maxAge: 60 * 60 * 24 });
         } else {
-          deleteCookie('rememberUser');
+          deleteCookie('username');
           deleteCookie('rememberMe');
         }
 

@@ -48,8 +48,6 @@ const login = async (request: any, reply: FastifyReply) => {
       return reply.status(401).send({ error: 'User not found' });
     }
 
-    console.log(bcrypt.hash('test', 10));
-
     // Compare the provided password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {

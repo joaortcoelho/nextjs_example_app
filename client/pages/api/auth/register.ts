@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { use } from 'react';
 
 export default async function registerHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -27,8 +28,8 @@ export default async function registerHandler(req: NextApiRequest, res: NextApiR
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        username,
-        password,
+        username: username,
+        password: password,
       },
       body: JSON.stringify({}),
     });

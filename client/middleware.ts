@@ -4,7 +4,6 @@ import { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token');
   const isLoggedIn = !!token;
-  console.log(isLoggedIn);
 
   if (!isLoggedIn && request.nextUrl.pathname === ('/startups' || '/favoritos' || '/logout')) {
     return NextResponse.redirect(new URL('/', request.url));

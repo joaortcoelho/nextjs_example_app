@@ -1,28 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function loginHandler(req: NextApiRequest, res: NextApiResponse) {
+export default async function profileHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed.' });
     return;
   }
 
   try {
-    const username = req.headers.username as string;
-    const password = req.headers.password as string;
+    const token = req.headers.authorization as string;
 
-    if (!username || !password) {
-      res.status(400).json({ error: 'Username and password are required.' });
+    if (!token) {
+      res.status(400).json({ error: 'Authentication required.' });
       return;
     }
 
-    const response = await fetch('http://localhost:8080/login', {
+    const response = await fetch('http://localhost:8080/profile', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        username: username,
-        password: password,
+        Authorization: token,
       },
-      body: JSON.stringify({}),
     });
 
     const data = await response.json();
@@ -30,7 +27,7 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
     if (response.ok && data.token) {
       res.status(200).json({ success: true, token: data.token });
     } else {
-      res.status(401).json({ error: 'Invalid credentials.' });
+      res.status(401).json({ error: 'Invalid token.' });
     }
   } catch (error) {
     console.error(error);
