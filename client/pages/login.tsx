@@ -3,6 +3,7 @@ import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input, message 
 import { useSession } from '@/context/session';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
+import { setCookie, getCookie, deleteCookie } from 'cookies-next';
 
 type FieldType = {
   username?: string;
@@ -16,11 +17,11 @@ export default function LoginPage() {
   const [form] = useForm();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('storedUser');
-    const storedRememberCheck = localStorage.getItem('rememberMe') === 'true';
+    const rememberUser = getCookie('rememberUser');
+    const rememberMe = getCookie('rememberMe') === 'true';
 
-    if (storedRememberCheck) {
-      form.setFieldsValue({ username: storedUser, remember: storedRememberCheck });
+    if (rememberMe) {
+      form.setFieldsValue({ username: rememberUser, remember: rememberMe });
     }
   }, [form]);
 
@@ -41,15 +42,15 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        localStorage.setItem('token', JSON.stringify(data.token));
+        setCookie('token', data.token, { maxAge: 60 * 60 * 24, secure: true, path: '/', sameSite: 'strict' });
         session.setIsLoggedIn(true);
 
         if (remember) {
-          localStorage.setItem('storedUser', username);
-          localStorage.setItem('rememberMe', 'true');
+          setCookie('rememberUser', username, { maxAge: 60 * 60 * 24 });
+          setCookie('rememberMe', 'true', { maxAge: 60 * 60 * 24 });
         } else {
-          localStorage.removeItem('storedUser');
-          localStorage.removeItem('rememberMe');
+          deleteCookie('rememberUser');
+          deleteCookie('rememberMe');
         }
 
         router.push('/');

@@ -1,4 +1,6 @@
+import cookieStore from 'next/headers';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { setCookie } from 'cookies-next';
 
 export default async function loginHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -29,10 +31,6 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
 
     if (response.ok && data.token) {
       res.status(200).json({ success: true, token: data.token });
-      if (typeof window !== 'undefined') {
-        // store token in browser
-        localStorage.setItem('token', JSON.stringify(data));
-      }
     } else {
       res.status(401).json({ error: 'Invalid credentials.' });
     }
@@ -41,4 +39,3 @@ export default async function loginHandler(req: NextApiRequest, res: NextApiResp
     res.status(500).json({ error: 'Something went wrong.' });
   }
 }
-

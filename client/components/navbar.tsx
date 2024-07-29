@@ -65,7 +65,7 @@ const itemsLogged: MenuItem[] = [
 const Nav: React.FC = () => {
   const router = useRouter();
 
-  const { isLoggedIn, setIsLoggedIn } = useSession();
+  const { isLoggedIn } = useSession();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(isLoggedIn ? itemsLogged : items);
 
   useEffect(() => {
@@ -73,13 +73,7 @@ const Nav: React.FC = () => {
   }, [isLoggedIn]);
 
   const onClick: MenuProps['onClick'] = (e) => {
-    if (e.key === 'logout') {
-      localStorage.removeItem('token');
-      setIsLoggedIn(false); // Update state on logout
-      router.push('/login');
-    } else {
-      router.push(e.key);
-    }
+    router.push(e.key);
   };
 
   return (
@@ -89,7 +83,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        //defaultSelectedKeys={}
+        defaultSelectedKeys={[router.pathname]}
         mode="horizontal"
         items={menuItems}
       />
