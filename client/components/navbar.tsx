@@ -11,6 +11,11 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 
+type RouteInfo = {
+  title: string;
+  menuKey?: string;
+};
+
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
@@ -62,8 +67,30 @@ const itemsLogged: MenuItem[] = [
   },
 ];
 
+const getRoute = (pathname: string): RouteInfo => {
+  switch (pathname) {
+    case '/home':
+      return { title: 'Home', menuKey: 'home' };
+    case '/login':
+      return { title: 'Entrar', menuKey: 'login' };
+    case '/register':
+      return { title: 'Registar', menuKey: 'register' };
+    case '/startups':
+      return { title: 'Startups', menuKey: 'startups' };
+    case '/favoritos':
+      return { title: 'Favoritos', menuKey: 'favoritos' };
+    case '/logout':
+      return { title: 'Logout', menuKey: 'logout' };
+    case '/_error':
+      return { title: 'Error', menuKey: 'error' };
+    default:
+      throw Error(`No route declared with the key ${pathname}.`);
+  }
+};
+
 const Nav: React.FC = () => {
   const router = useRouter();
+  const route = getRoute(router.pathname);
 
   const { isLoggedIn } = useSession();
   const [menuItems, setMenuItems] = useState<MenuItem[]>(isLoggedIn ? itemsLogged : items);
@@ -83,7 +110,7 @@ const Nav: React.FC = () => {
         theme="dark"
         onClick={onClick}
         style={{ flex: 1, minWidth: 0 }}
-        defaultSelectedKeys={[router.pathname]}
+        defaultSelectedKeys={route.menuKey ? [route.menuKey] : undefined}
         mode="horizontal"
         items={menuItems}
       />

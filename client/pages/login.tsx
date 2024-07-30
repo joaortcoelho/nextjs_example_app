@@ -49,7 +49,6 @@ export default function LoginPage() {
         if (remember) {
           setCookie('rememberMe', 'true', { maxAge: 60 * 60 * 24 });
         } else {
-          deleteCookie('username');
           deleteCookie('rememberMe');
         }
 

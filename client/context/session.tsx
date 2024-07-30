@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { NextApiRequest } from 'next';
 import { getCookie } from 'cookies-next';
 
 interface SessionContextType {

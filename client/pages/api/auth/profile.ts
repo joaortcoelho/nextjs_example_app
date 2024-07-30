@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function profileHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed.' });
     return;
   }
@@ -15,7 +15,7 @@ export default async function profileHandler(req: NextApiRequest, res: NextApiRe
     }
 
     const response = await fetch('http://localhost:8080/profile', {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: token,

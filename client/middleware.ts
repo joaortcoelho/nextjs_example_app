@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!token;
 
   if (!isLoggedIn && request.nextUrl.pathname === ('/startups' || '/favoritos' || '/logout')) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (isLoggedIn && request.nextUrl.pathname === '/login') {

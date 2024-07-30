@@ -12,7 +12,7 @@ export default async function favoritosHandler(req: NextApiRequest, res: NextApi
     const token = req.headers.authorization as string;
     //console.log(token);
 
-    const user = await fetch('http://localhost:8080/profile', {
+    const user = await fetch('/api/auth/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
