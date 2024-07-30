@@ -7,7 +7,7 @@ export default async function profileHandler(req: NextApiRequest, res: NextApiRe
   }
 
   try {
-    const token = req.headers.authorization as string;
+    const token = req.headers.token as string;
 
     if (!token) {
       res.status(400).json({ error: 'Authentication required.' });
@@ -18,14 +18,15 @@ export default async function profileHandler(req: NextApiRequest, res: NextApiRe
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        token: token,
       },
     });
 
     const data = await response.json();
+    //console.log(data);
 
-    if (response.ok && data.token) {
-      res.status(200).json({ success: true, token: data.token });
+    if (response.ok && data) {
+      res.status(200).json({ success: true, data: data });
     } else {
       res.status(401).json({ error: 'Invalid token.' });
     }

@@ -19,8 +19,7 @@ const Favoritos: React.FC = () => {
       try {
         const response = await fetch('/api/favoritos', {
           headers: {
-            Authorization: token,
-            'Cache-Control': 'no-cache',
+            authorization: token,
           },
         });
         const result = await response.json();
@@ -56,7 +55,7 @@ const Favoritos: React.FC = () => {
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
-            <Typography.Text mark>{item.nome}</Typography.Text>
+            <Typography.Title level={5}>{item.nome}</Typography.Title>
           </List.Item>
         )}
       />

@@ -20,7 +20,6 @@ const Startups: React.FC = () => {
         const response = await fetch('/api/startups', {
           headers: {
             Authorization: token,
-            'Cache-Control': 'no-cache',
           },
         });
         const result = await response.json();
@@ -55,7 +54,7 @@ const Startups: React.FC = () => {
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
-            <Typography.Text mark>{item.nome}</Typography.Text>
+            <Typography.Title level={5}>{item.nome}</Typography.Title>
           </List.Item>
         )}
       />

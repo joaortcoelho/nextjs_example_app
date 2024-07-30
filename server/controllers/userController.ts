@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import main from '../controllers/mainController';
 import User from '../models/User';
 import bcrypt from 'bcrypt';

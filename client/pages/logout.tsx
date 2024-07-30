@@ -11,6 +11,7 @@ const Logout = () => {
   useEffect(() => {
     setIsLoggedIn(false);
     deleteCookie('token');
+    deleteCookie('userId');
     router.push('/login'); // Redirect to login page after logout
   }, [router, setIsLoggedIn]);
 

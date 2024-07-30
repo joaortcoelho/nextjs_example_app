@@ -26,7 +26,7 @@ export default async function favoritosHandler(req: NextApiRequest, res: NextApi
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        authorization: token,
       },
     });
 
