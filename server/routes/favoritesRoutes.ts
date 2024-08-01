@@ -1,39 +1,35 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import main from "../controllers/mainController";
-import user from "../controllers/userController";
-import Favorite from "../models/Favorite";
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import main from '../controllers/mainController';
+import user from '../controllers/userController';
+import Favorite from '../models/Favorite';
 
 const favoritesRoutes = async (fastify: FastifyInstance) => {
-  const table = "favoritos";
+  const table = 'favoritos';
 
   // GET: all favorites for a specific user
   fastify.get(
-    "/utilizadores/:id/favoritos",
+    '/utilizadores/:id/favoritos',
     { preHandler: user.isUserAuthorizedToTakeAction },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id: id_utilizador } = request.params as { id: string };
 
       try {
-        const userFavorites: unknown = await main.getByParam<Favorite[]>(
-          table,
-          "id_utilizador",
-          id_utilizador
-        );
+        const userFavorites: unknown = await main.getByParam<Favorite[]>(table, 'id_utilizador', id_utilizador);
         if (!userFavorites) {
-          reply.status(404).send({ error: "User favorites not found" });
+          reply.status(404).send({ error: 'User favorites not found' });
           return;
         }
         return userFavorites;
       } catch (error) {
         fastify.log.error(error);
-        reply.status(500).send({ error: "Failed to fetch favoritos for user" });
+        reply.status(500).send({ error: 'Failed to fetch favoritos for user' });
       }
     }
   );
 
   // ADD: a favorite for a specific user
   fastify.post(
-    "/utilizadores/:id/favoritos/:id2",
+    '/utilizadores/:id/favoritos/:id2',
     { preHandler: user.isUserAuthorizedToTakeAction },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id, id2 } = request.params as { id: string; id2: string };
@@ -46,14 +42,14 @@ const favoritesRoutes = async (fastify: FastifyInstance) => {
         return { success: true };
       } catch (error) {
         fastify.log.error(error);
-        reply.status(500).send({ error: "Failed to add favorite" });
+        reply.status(500).send({ error: 'Failed to add favorite' });
       }
     }
   );
 
   // DELETE: a favorite for a specific user
   fastify.delete(
-    "/utilizadores/:id/favoritos/:id2",
+    '/utilizadores/:id/favoritos/:id2',
     { preHandler: user.isUserAuthorizedToTakeAction },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { id2 } = request.params as { id2: number };
@@ -63,7 +59,7 @@ const favoritesRoutes = async (fastify: FastifyInstance) => {
         return { success: true };
       } catch (error) {
         fastify.log.error(error);
-        reply.status(500).send({ error: "Failed to delete favorite" });
+        reply.status(500).send({ error: 'Failed to delete favorite' });
       }
     }
   );

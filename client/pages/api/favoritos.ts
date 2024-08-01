@@ -10,6 +10,7 @@ export default async function favoritosHandler(token: string, userId: number) {
         Authorization: token,
       },
     });
+    console.log(response);
 
     if (response.ok) return await response.json();
   } catch (error) {
@@ -21,8 +22,6 @@ export async function addFavoritoHandler(userId: number, startupId: number) {
   try {
     const token = getCookie('token');
     if (!token) throw new Error('Token not found!');
-
-    const favorites = await fetch(``);
 
     const response = await fetch(`http://localhost:8080/utilizadores/${userId}/favoritos/${startupId}`, {
       method: 'POST',

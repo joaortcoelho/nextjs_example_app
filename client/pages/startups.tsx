@@ -21,6 +21,13 @@ const Startups: React.FC = () => {
     });
   };
 
+  const warnFavMsg = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Startup já está nos favoritos!',
+    });
+  };
+
   const rmFavMsg = () => {
     messageApi.open({
       type: 'success',
@@ -72,7 +79,9 @@ const Startups: React.FC = () => {
             <Button
               icon={<StarOutlined />}
               onClick={() => {
-                addFavoritoHandler(Number(getCookie('userId')), item.id).then(addFavMsg);
+                addFavoritoHandler(Number(getCookie('userId')), item.id).then((result) =>
+                  result ? addFavMsg : warnFavMsg,
+                );
               }}
             />
           </List.Item>

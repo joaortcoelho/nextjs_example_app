@@ -9,7 +9,7 @@ interface Startup {
   nome: string;
 }
 
-interface Favorito {
+interface Favorite {
   id_utilizador: number;
   id_startup: number;
 }
@@ -22,19 +22,19 @@ const Favoritos: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = getCookie('token') as string;
-      const userId = getCookie('userId');
+    const token = getCookie('token') as string;
+    const userId = getCookie('userId');
 
+    const fetchData = async () => {
       try {
         const response = await favoritosHandler(token, Number(userId));
-        //console.log('Result:', response); // Debugging statement
+        console.log('Result:', response); // Debugging statement
 
         if (Array.isArray(response)) {
           const favorites = await Promise.all(
-            response.map(async (favorite: Startup) => {
-              const startup = await startupByIdHandler(token, favorite.id);
-              return { ...startup, id_startup: favorite.id };
+            response.map(async (favorite: Favorite) => {
+              const startup = await startupByIdHandler(token, favorite.id_startup);
+              return { ...startup, id_startup: favorite.id_startup };
             }),
           );
           setData(favorites);

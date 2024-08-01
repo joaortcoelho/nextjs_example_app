@@ -44,7 +44,7 @@ const login = async (request: any, reply: FastifyReply) => {
 
   try {
     const user = await main.getByParam<User>('utilizador', 'username', username);
-    if (!user) {
+    if (!user || Array.isArray(user)) {
       return reply.status(401).send({ error: 'User not found' });
     }
 
