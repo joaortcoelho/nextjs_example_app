@@ -1,6 +1,7 @@
 // pages/api/startups.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getCookie } from 'cookies-next';
 
 export default async function favoritosHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -10,30 +11,20 @@ export default async function favoritosHandler(req: NextApiRequest, res: NextApi
 
   try {
     const token = req.headers.authorization as string;
-    //console.log(token);
+    const userId = getCookie('userId', { req, res }) as string;
 
-    const user = await fetch('/api/auth/profile', {
+    const data = await fetch(`http://localhost:8080/utilizadores/${userId}/favoritos`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        token: token,
-      },
-    });
-    const userId = await user.json().then((user) => user.id);
-    console.log(userId);
-
-    const response = await fetch(`http://localhost:8080/utilizadores/${userId}/favoritos`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: token,
+        Authorization: token,
       },
     });
 
-    const data = await response.json();
+    const favorites = await data.json();
 
-    if (response.ok) {
-      res.status(200).json(data);
+    if (data.ok) {
+      res.status(200).json(favorites);
     } else {
       res.status(401).json({ error: 'Invalid token.' });
     }

@@ -1,13 +1,9 @@
 import { Alert, Divider, List, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
+import { Startup } from './api/startups';
 
 const { Title } = Typography;
-
-interface Startup {
-  id: number;
-  nome: string;
-}
 
 const Startups: React.FC = () => {
   const [data, setData] = useState<Startup[]>([]);
@@ -19,7 +15,7 @@ const Startups: React.FC = () => {
       try {
         const response = await fetch('/api/startups', {
           headers: {
-            Authorization: token,
+            authorization: token,
           },
         });
         const result = await response.json();

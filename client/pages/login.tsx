@@ -43,7 +43,6 @@ export default function LoginPage() {
 
       if (data.success) {
         setCookie('token', data.token, { maxAge: 60 * 60 * 24, secure: true, path: '/', sameSite: 'strict' });
-        setCookie('username', username);
         session.setIsLoggedIn(true);
 
         if (remember) {

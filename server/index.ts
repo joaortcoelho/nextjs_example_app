@@ -1,21 +1,21 @@
-import fastify from "fastify";
-import cors from "@fastify/cors";
-import jwt from "@fastify/jwt";
-import startupRoutes from "./routes/startupRoutes";
-import userRoutes from "./routes/userRoutes";
-import favoritesRoutes from "./routes/favoritesRoutes";
+import fastify from 'fastify';
+import cors from '@fastify/cors';
+import jwt from '@fastify/jwt';
+import startupRoutes from './routes/startupRoutes';
+import userRoutes from './routes/userRoutes';
+import favoritesRoutes from './routes/favoritesRoutes';
 
 const server = fastify({ logger: true });
 
 server.register(jwt, {
-  secret: "supersecret", // Use an environment variable in production
+  secret: 'supersecret', // Use an environment variable in production
 });
 
 server.register(cors, {
-  origin: "*",
+  origin: 'http://localhost:3000',
   credentials: true,
-  methods: ["PUT", "POST", "GET", "DELETE"],
-  allowedHeaders: ["username", "password", "token", "nome", "Content-Type"],
+  methods: ['PUT', 'POST', 'GET', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
 });
@@ -26,8 +26,8 @@ server.register(userRoutes);
 server.register(favoritesRoutes);
 
 // Health check route
-server.get("/", async () => {
-  return { status: "Server is up and running!" };
+server.get('/', async () => {
+  return { status: 'Server is up and running!' };
 });
 
 // Start the server

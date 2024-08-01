@@ -1,3 +1,4 @@
+import { getCookie } from 'cookies-next';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function profileHandler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,7 +8,7 @@ export default async function profileHandler(req: NextApiRequest, res: NextApiRe
   }
 
   try {
-    const token = req.headers.token as string;
+    const token = req.headers.authorization;
 
     if (!token) {
       res.status(400).json({ error: 'Authentication required.' });
@@ -23,7 +24,6 @@ export default async function profileHandler(req: NextApiRequest, res: NextApiRe
     });
 
     const data = await response.json();
-    //console.log(data);
 
     if (response.ok && data) {
       res.status(200).json({ success: true, data: data });

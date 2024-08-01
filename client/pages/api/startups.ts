@@ -1,5 +1,6 @@
 // pages/api/startups.ts
 
+import { getCookie } from 'cookies-next';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function startupsHandler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,5 +30,32 @@ export default async function startupsHandler(req: NextApiRequest, res: NextApiR
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal server error.' });
+  }
+}
+
+export async function startupByIdHandler(id: number) {
+  try {
+    const token = getCookie('token') as string;
+    //console.log(token);
+
+    if (!token) throw new Error('Token not found!');
+
+    const response = await fetch(`http://localhost:8080/startups/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+    });
+
+    console.log(response.status);
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      Error('Invalid token.');
+    }
+  } catch (error) {
+    Error('Internal server error.');
   }
 }
