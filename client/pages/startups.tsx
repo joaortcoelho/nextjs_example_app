@@ -1,7 +1,9 @@
-import { Alert, Divider, List, Spin, Typography } from 'antd';
+import { Alert, Button, Divider, List, message, Space, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
-import { Startup } from './api/startups';
+import startupsHandler, { Startup } from './api/startups';
+import { addFavoritoHandler } from './api/favoritos';
+import { StarOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -9,21 +11,35 @@ const Startups: React.FC = () => {
   const [data, setData] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const addFavMsg = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Startup adicionada aos favoritos!',
+    });
+  };
+
+  const rmFavMsg = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Startup removida dos favoritos!',
+    });
+  };
+
   useEffect(() => {
     const token = getCookie('token') as string;
+
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/startups', {
-          headers: {
-            authorization: token,
-          },
-        });
-        const result = await response.json();
+        const response = await startupsHandler(token);
+        //console.log(response);
 
-        if (response.ok) {
-          setData(result);
+        if (Array.isArray(response)) {
+          setData(response);
         } else {
-          setError(result.error || 'Failed to fetch data');
+          setError(response.error || 'Failed to fetch data');
         }
       } catch (error) {
         setError('An unexpected error occurred');
@@ -40,6 +56,7 @@ const Startups: React.FC = () => {
 
   return (
     <>
+      {contextHolder}
       <div className="Startups">
         <Title>Startups</Title>
       </div>
@@ -50,7 +67,14 @@ const Startups: React.FC = () => {
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
+            <Typography.Text>{item.id}</Typography.Text>
             <Typography.Title level={5}>{item.nome}</Typography.Title>
+            <Button
+              icon={<StarOutlined />}
+              onClick={() => {
+                addFavoritoHandler(Number(getCookie('userId')), item.id).then(addFavMsg);
+              }}
+            />
           </List.Item>
         )}
       />

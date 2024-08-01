@@ -2,14 +2,16 @@ import { Alert, Divider, List, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
 import { startupByIdHandler } from './api/startups';
+import favoritosHandler from './api/favoritos';
+
+interface Startup {
+  id: number;
+  nome: string;
+}
 
 interface Favorito {
   id_utilizador: number;
   id_startup: number;
-}
-
-interface Startup extends Favorito {
-  nome: string;
 }
 
 const { Title } = Typography;
@@ -22,40 +24,25 @@ const Favoritos: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = getCookie('token') as string;
+      const userId = getCookie('userId');
 
       try {
-        const response = await fetch('/api/favoritos', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-        });
-        const result = await response.json();
-        console.log(result);
+        const response = await favoritosHandler(token, Number(userId));
+        //console.log('Result:', response); // Debugging statement
 
-        // console.log(await startupByIdHandler(1)); //teste
-
-        if (response.ok) {
-          const startups = await Promise.all(
-            result.map(async (item: { id_startup: any }) => {
-              console.log(item.id_startup);
-              const detailsResponse = await fetch(`/api/startups/${item.id_startup}`, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: token,
-                },
-              });
-              if (!detailsResponse.ok) {
-                throw new Error('Failed to fetch startup details');
-              }
-              return await detailsResponse.json();
+        if (Array.isArray(response)) {
+          const favorites = await Promise.all(
+            response.map(async (favorite: Startup) => {
+              const startup = await startupByIdHandler(token, favorite.id);
+              return { ...startup, id_startup: favorite.id };
             }),
           );
-          setData(startups);
+          setData(favorites);
         } else {
-          setError(result.error || 'Failed to fetch data');
+          setError(response.error || 'Failed to fetch data');
         }
       } catch (error) {
+        console.error('Error during fetch:', error); // Debugging statement
         setError('An unexpected error occurred');
       } finally {
         setLoading(false);
@@ -64,7 +51,6 @@ const Favoritos: React.FC = () => {
 
     fetchData();
   }, []);
-
   if (loading) return <Spin />;
   if (error) return <Alert message="Error" description="Failed to load data." type="error" showIcon />;
 

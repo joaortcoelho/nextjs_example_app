@@ -19,6 +19,7 @@ CREATE TABLE utilizador (
 CREATE TABLE favoritos (
     id_utilizador INT,
     id_startup INT,
+    UNIQUE(id_utilizador, id_startup),
     FOREIGN KEY (id_utilizador) REFERENCES Utilizador(id),
     FOREIGN KEY (id_startup) REFERENCES Startup(id)
 );
