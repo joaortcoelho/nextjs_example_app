@@ -10,7 +10,6 @@ export default async function favoritosHandler(token: string, userId: number) {
         Authorization: token,
       },
     });
-    console.log(response);
 
     if (response.ok) return await response.json();
   } catch (error) {
@@ -32,7 +31,7 @@ export async function addFavoritoHandler(userId: number, startupId: number) {
       body: JSON.stringify({}),
     });
 
-    if (response.ok) return await response.json();
+    if (response.status) return await response.json();
   } catch (error) {
     console.log(error);
   }

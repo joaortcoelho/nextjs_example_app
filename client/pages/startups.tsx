@@ -14,24 +14,17 @@ const Startups: React.FC = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const addFavMsg = () => {
+  const addFavMsg = (startupName: string) => {
     messageApi.open({
       type: 'success',
-      content: 'Startup adicionada aos favoritos!',
+      content: `${startupName} adicionada aos favoritos!`,
     });
   };
 
-  const warnFavMsg = () => {
+  const warnFavMsg = (startupName: string) => {
     messageApi.open({
-      type: 'success',
-      content: 'Startup já está nos favoritos!',
-    });
-  };
-
-  const rmFavMsg = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Startup removida dos favoritos!',
+      type: 'warning',
+      content: `${startupName} já está nos favoritos!`,
     });
   };
 
@@ -58,6 +51,19 @@ const Startups: React.FC = () => {
     fetchData();
   }, []);
 
+  const updateHandler = async (startupName: string, startupId: number) => {
+    try {
+      let response = await addFavoritoHandler(Number(getCookie('userId')), startupId);
+      if (response.success) {
+        addFavMsg(startupName);
+      } else {
+        warnFavMsg(startupName);
+      }
+    } catch (error) {
+      console.error('Error adding favorite:', error); // Debugging statement
+    }
+  };
+
   if (loading) return <Spin />;
   if (error) return <Alert message="Error" description="Failed to load data." type="error" showIcon />;
 
@@ -78,10 +84,8 @@ const Startups: React.FC = () => {
             <Typography.Title level={5}>{item.nome}</Typography.Title>
             <Button
               icon={<StarOutlined />}
-              onClick={() => {
-                addFavoritoHandler(Number(getCookie('userId')), item.id).then((result) =>
-                  result ? addFavMsg : warnFavMsg,
-                );
+              onClick={async () => {
+                updateHandler(item.nome, item.id);
               }}
             />
           </List.Item>
