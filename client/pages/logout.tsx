@@ -6,14 +6,13 @@ import { deleteCookie } from 'cookies-next';
 
 const Logout = () => {
   const router = useRouter();
-  const { setIsLoggedIn } = useSession();
+  const { isLoggedIn, setLogout } = useSession();
 
   useEffect(() => {
-    setIsLoggedIn(false);
-    deleteCookie('token');
-    deleteCookie('userId');
+    setLogout()
+
     router.push('/login'); // Redirect to login page after logout
-  }, [router, setIsLoggedIn]);
+  }, [router, isLoggedIn, setLogout]);
 
   return (
     <div className="Logout">

@@ -1,39 +1,31 @@
-import { Alert, Button, Card, Divider, List, message, Space, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Divider, Flex, Input, List, message, Modal, Space, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
-import startupsHandler, { Startup } from './api/startups';
+import startupsHandler, {
+  addStartupHandler,
+  deleteStartupHandler,
+  Startup,
+  updateStartupHandler,
+} from './api/startups';
 import { addFavoritoHandler } from './api/favorites';
-import { EditOutlined, StarOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, StarOutlined } from '@ant-design/icons';
 import { useSession } from '@/context/session';
-import Paragraph from 'antd/es/skeleton/Paragraph';
 
 const { Title } = Typography;
 
 const Startups: React.FC = () => {
-  const { userId } = useSession();
+  const { userId, userRole } = useSession();
 
   const [data, setData] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [startupName, setStartupName] = useState('');
+
   const [messageApi, contextHolder] = message.useMessage();
 
-  const addFavMsg = (startupName: string) => {
-    messageApi.open({
-      type: 'success',
-      content: `${startupName} adicionada aos favoritos!`,
-    });
-  };
-
-  const warnFavMsg = (startupName: string) => {
-    messageApi.open({
-      type: 'warning',
-      content: `${startupName} já está nos favoritos!`,
-    });
-  };
-
   useEffect(() => {
-    const token = getCookie('token') as string;
-
     const fetchData = async () => {
       try {
         const response = await startupsHandler();
@@ -58,17 +50,55 @@ const Startups: React.FC = () => {
     try {
       const response = await addFavoritoHandler(Number(userId), startupId);
       if (response === 200) {
-        addFavMsg(startupName);
-      }
-      if (response === 500) {
-        warnFavMsg(startupName);
+        messageApi.success(`${startupName} adicionada aos favoritos!`);
+      } else {
+        messageApi.warning(`${startupName} já está nos favoritos!`);
       }
     } catch (error) {
       console.error('Error adding favorite:', error); // Debugging statement
     }
   };
 
-  const editHandler = async () => {};
+  const addHandler = async (newStartupName: string) => {
+    try {
+      const response = await addStartupHandler(newStartupName);
+      if (response === 200) {
+        messageApi.success(`${newStartupName} adicionada à lista!`);
+        setData(await startupsHandler());
+      } else {
+        messageApi.error(`Erro ao adicionar startup!`);
+      }
+    } catch (error) {
+      console.error('Failed to add startup.', error);
+    }
+  };
+
+  const updateHandler = async (startupId: number, newStartupName: string) => {
+    try {
+      const response = await updateStartupHandler(startupId, newStartupName);
+      if (response === 200) {
+        messageApi.success(`Startup atualizada com sucesso!`);
+      } else {
+        messageApi.error(`Não foi possível atualizar a startup!`);
+      }
+    } catch (error) {
+      console.error('Failed to update startup.', error);
+    }
+  };
+
+  const deleteHandler = async (startupId: number) => {
+    try {
+      const response = await deleteStartupHandler(startupId);
+      if (response === 200) {
+        setData((prevData) => prevData.filter((item) => item.id !== startupId));
+        messageApi.success(`Startup eliminada com sucesso!`);
+      } else {
+        messageApi.error(`Não foi possível eliminar a startup!`);
+      }
+    } catch (error) {
+      console.error('Failed to delete startup.', error);
+    }
+  };
 
   if (loading) return <Spin />;
   if (error) return <Alert message="Error" description="Failed to load data." type="error" showIcon />;
@@ -76,28 +106,73 @@ const Startups: React.FC = () => {
   return (
     <>
       {contextHolder}
-      <div className="Startups">
+      <Flex className="Startups" gap="middle">
         <Title level={3}>Startups</Title>
-      </div>
+        {userRole === 'admin' ? (
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <PlusOutlined /> Adicionar
+          </Button>
+        ) : null}
+      </Flex>
       <Divider />
+
       <List
-        grid={{ gutter: 16, column: 4 }}
+        grid={{ gutter: 16, column: 3 }}
         dataSource={data}
         locale={{ emptyText: 'Não existem startups.' }}
         renderItem={(item) => (
-          <List.Item>
-            <Card
-              title={item.nome}
-              actions={[
-                <StarOutlined key={'favorite'} onClick={() => favoriteHandler(item.nome, item.id)} />,
-                <EditOutlined key={'edit'} />,
-              ]}
+          <>
+            <List.Item>
+              <Card
+                title={item.nome}
+                actions={[
+                  <StarOutlined key={'favorite'} onClick={() => favoriteHandler(item.nome, item.id)} />,
+                  userRole === 'admin' && <EditOutlined key={'edit'} onClick={() => setIsUpdateModalOpen(true)} />,
+                  userRole === 'admin' && <DeleteOutlined key={'delete'} onClick={() => deleteHandler(item.id)} />,
+                ]}
+              >
+                <p>ID: {item.id}</p>
+              </Card>
+            </List.Item>
+            <Modal
+              title="Editar startup"
+              open={isUpdateModalOpen}
+              onOk={() => {
+                updateHandler(item.id, startupName);
+                setIsUpdateModalOpen(false);
+              }}
+              okText="Atualizar"
+              onCancel={() => setIsUpdateModalOpen(false)}
+              cancelText="Cancelar"
             >
-              <p>ID: {item.id}</p>
-            </Card>
-          </List.Item>
+              <Input
+                type="text"
+                value={startupName}
+                onChange={(i) => setStartupName(i.target.value)}
+                placeholder={item.nome}
+              />
+            </Modal>
+          </>
         )}
       />
+      <Modal
+        title="Adicionar startup"
+        open={isAddModalOpen}
+        onOk={() => {
+          addHandler(startupName);
+          setIsAddModalOpen(false);
+        }}
+        okText="Adicionar"
+        onCancel={() => setIsAddModalOpen(false)}
+        cancelText="Cancelar"
+      >
+        <Input
+          type="text"
+          value={startupName}
+          onChange={(i) => setStartupName(i.target.value)}
+          placeholder="Introduza o nome da nova startup"
+        />
+      </Modal>
     </>
   );
 };

@@ -17,20 +17,6 @@ const Favoritos: React.FC = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const rmFavMsg = (startupName: string) => {
-    messageApi.open({
-      type: 'success',
-      content: `${startupName} removido dos favoritos!`,
-    });
-  };
-
-  const rmErrorMsg = (startupName: string) => {
-    messageApi.open({
-      type: 'success',
-      content: `Erro ao remover ${startupName} dos favoritos!`,
-    });
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,15 +48,15 @@ const Favoritos: React.FC = () => {
     fetchData();
   }, [userId]);
 
-  const updateHandler = async (startupName: string, startupId: number) => {
+  const deleteHandler = async (startupName: string, startupId: number) => {
     try {
       await rmFavoritoHandler(Number(userId), startupId);
-      rmFavMsg(startupName);
+      messageApi.success(`${startupName} removido dos favoritos!`);
       // Remove the favorite from the data list
       setData((prevData) => prevData.filter((item) => item.id !== startupId));
     } catch (error) {
       console.error('Error removing favorite:', error); // Debugging statement
-      rmErrorMsg(startupName);
+      messageApi.error(`Erro ao remover ${startupName} dos favoritos!`);
     }
   };
 
@@ -85,13 +71,16 @@ const Favoritos: React.FC = () => {
       </div>
       <Divider />
       <List
-        grid={{ gutter: 16, column: 4 }}
+        grid={{ gutter: 16, column: 3 }}
         dataSource={data}
         locale={{ emptyText: 'Adicione startups aos seus favoritos para as ver aqui.' }}
         renderItem={(item) => (
           <List.Item>
-            <Card title={item.nome}>
-              <Button icon={<DeleteOutlined />} onClick={() => updateHandler(item.nome, item.id)} />
+            <Card
+              title={item.nome}
+              actions={[<DeleteOutlined key={'delete'} onClick={() => deleteHandler(item.nome, item.id)} />]}
+            >
+              <p>ID: {item.id}</p>
             </Card>
           </List.Item>
         )}
