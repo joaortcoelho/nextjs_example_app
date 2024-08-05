@@ -70,7 +70,7 @@ const login = async (request: any, reply: FastifyReply) => {
 // User profile
 const profile = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    const decoded: any = request.server.jwt.verify((request.headers as any).token);
+    const decoded: any = request.server.jwt.verify((request.headers as any).authorization);
     return await main.getByParam('utilizador', 'id', decoded.id);
   } catch (error) {
     console.error(error);

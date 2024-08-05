@@ -1,9 +1,28 @@
-import { GetServerSideProps } from 'next';
+import { useSession } from '@/context/session';
+import { Divider, Typography } from 'antd';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return { redirect: { destination: `/home`, permanent: false } };
+import React from 'react';
+import { getCookie } from 'cookies-next';
+
+const { Title } = Typography;
+
+const Home: React.FC = () => {
+  return (
+    <>
+      <div className="Home">
+        {useSession().isLoggedIn ? (
+          <>
+            <Title level={2}>Bem-vindo, {getCookie('username')}.</Title>
+            <Divider />
+          </>
+        ) : (
+          <>
+            <Title>Bem-vindo!</Title>
+            <Divider />
+          </>
+        )}
+      </div>
+    </>
+  );
 };
-
-export default function Index() {
-  return null;
-}
+export default Home;

@@ -7,8 +7,10 @@ export interface Startup {
   nome: string;
 }
 
-export default async function startupsHandler(token: string) {
+export default async function startupsHandler() {
   try {
+    const token = getCookie('token');
+    if (!token) throw new Error('Token not found!');
     const response = await fetch('http://localhost:8080/startups', {
       method: 'GET',
       headers: {
@@ -23,8 +25,10 @@ export default async function startupsHandler(token: string) {
   }
 }
 
-export async function startupByIdHandler(token: string, startupId: number) {
+export async function startupByIdHandler(startupId: number) {
   try {
+    const token = getCookie('token');
+    if (!token) throw new Error('Token not found!');
     const response = await fetch(`http://localhost:8080/startups/${startupId}`, {
       method: 'GET',
       headers: {

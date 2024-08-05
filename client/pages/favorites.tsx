@@ -1,23 +1,16 @@
-import { Alert, Button, Divider, List, message, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Divider, List, message, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
-import { startupByIdHandler } from './api/startups';
-import favoritosHandler, { rmFavoritoHandler } from './api/favoritos';
+import { Startup, startupByIdHandler } from './api/startups';
+import favoritosHandler, { Favorite, rmFavoritoHandler } from './api/favorites';
 import { DeleteOutlined } from '@ant-design/icons';
-
-interface Startup {
-  id: number;
-  nome: string;
-}
-
-interface Favorite {
-  id_utilizador: number;
-  id_startup: number;
-}
+import { useSession } from '@/context/session';
 
 const { Title } = Typography;
 
 const Favoritos: React.FC = () => {
+  const { userId } = useSession();
+
   const [data, setData] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,12 +32,9 @@ const Favoritos: React.FC = () => {
   };
 
   useEffect(() => {
-    const token = getCookie('token') as string;
-    const userId = getCookie('userId');
-
     const fetchData = async () => {
       try {
-        const response = await favoritosHandler(token, Number(userId));
+        const response = await favoritosHandler(Number(userId));
         //console.log('Result:', response); // Debugging statement
 
         if (Array.isArray(response)) {
@@ -53,7 +43,7 @@ const Favoritos: React.FC = () => {
           }
           const favorites = await Promise.all(
             response.map(async (favorite: Favorite) => {
-              const startup = await startupByIdHandler(token, favorite.id_startup);
+              const startup = await startupByIdHandler(favorite.id_startup);
               return { ...startup, id_startup: favorite.id_startup };
             }),
           );
@@ -70,7 +60,7 @@ const Favoritos: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [userId]);
 
   const updateHandler = async (startupName: string, startupId: number) => {
     try {
@@ -95,14 +85,14 @@ const Favoritos: React.FC = () => {
       </div>
       <Divider />
       <List
-        header={<div>Lista</div>}
-        bordered
+        grid={{ gutter: 16, column: 4 }}
         dataSource={data}
+        locale={{ emptyText: 'Adicione startups aos seus favoritos para as ver aqui.' }}
         renderItem={(item) => (
           <List.Item>
-            <Typography.Text>{item.id}</Typography.Text>
-            <Typography.Title level={5}>{item.nome}</Typography.Title>
-            <Button icon={<DeleteOutlined />} onClick={() => updateHandler(item.nome, item.id)} />
+            <Card title={item.nome}>
+              <Button icon={<DeleteOutlined />} onClick={() => updateHandler(item.nome, item.id)} />
+            </Card>
           </List.Item>
         )}
       />

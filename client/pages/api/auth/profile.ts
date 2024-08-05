@@ -1,37 +1,24 @@
 import { getCookie } from 'cookies-next';
-import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function profileHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed.' });
-    return;
-  }
+export interface Profile {
+  id: number | null;
+  username: string | null;
+  role: string | null;
+}
 
+export default async function profileHandler() {
   try {
-    const token = req.headers.authorization;
-
-    if (!token) {
-      res.status(400).json({ error: 'Authentication required.' });
-      return;
-    }
-
+    const token = getCookie('token') as string;
     const response = await fetch('http://localhost:8080/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        token: token,
+        Authorization: token,
       },
     });
 
-    const data = await response.json();
-
-    if (response.ok && data) {
-      res.status(200).json({ success: true, data: data });
-    } else {
-      res.status(401).json({ error: 'Invalid token.' });
-    }
+    if (response.ok) return await response.json();
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong.' });
+    console.log(error);
   }
 }

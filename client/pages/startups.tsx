@@ -1,17 +1,19 @@
-import { Alert, Button, Divider, List, message, Space, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Divider, List, message, Space, Spin, Typography } from 'antd';
 import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
 import startupsHandler, { Startup } from './api/startups';
-import { addFavoritoHandler } from './api/favoritos';
+import { addFavoritoHandler } from './api/favorites';
 import { StarOutlined } from '@ant-design/icons';
+import { useSession } from '@/context/session';
 
 const { Title } = Typography;
 
 const Startups: React.FC = () => {
+  const { userId } = useSession();
+
   const [data, setData] = useState<Startup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [messageApi, contextHolder] = message.useMessage();
 
   const addFavMsg = (startupName: string) => {
@@ -33,7 +35,7 @@ const Startups: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const response = await startupsHandler(token);
+        const response = await startupsHandler();
         //console.log(response);
 
         if (Array.isArray(response)) {
@@ -53,7 +55,7 @@ const Startups: React.FC = () => {
 
   const updateHandler = async (startupName: string, startupId: number) => {
     try {
-      let response = await addFavoritoHandler(Number(getCookie('userId')), startupId);
+      let response = await addFavoritoHandler(Number(userId), startupId);
       if (response.success) {
         addFavMsg(startupName);
       } else {
@@ -75,19 +77,19 @@ const Startups: React.FC = () => {
       </div>
       <Divider />
       <List
-        header={<div>Lista</div>}
-        bordered
+        grid={{ gutter: 16, column: 4 }}
         dataSource={data}
+        locale={{ emptyText: 'Não existem startups.' }}
         renderItem={(item) => (
           <List.Item>
-            <Typography.Text>{item.id}</Typography.Text>
-            <Typography.Title level={5}>{item.nome}</Typography.Title>
-            <Button
-              icon={<StarOutlined />}
-              onClick={async () => {
-                updateHandler(item.nome, item.id);
-              }}
-            />
+            <Card title={item.nome}>
+              <Button
+                icon={<StarOutlined />}
+                onClick={async () => {
+                  updateHandler(item.nome, item.id);
+                }}
+              />
+            </Card>
           </List.Item>
         )}
       />

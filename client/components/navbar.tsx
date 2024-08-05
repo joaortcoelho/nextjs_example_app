@@ -20,7 +20,7 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
   {
-    key: 'home',
+    key: '/',
     label: 'Início',
     type: 'item',
     icon: <HomeOutlined />,
@@ -41,7 +41,7 @@ const items: MenuItem[] = [
 
 const itemsLogged: MenuItem[] = [
   {
-    key: 'home',
+    key: '/',
     label: 'Início',
     type: 'item',
     icon: <HomeOutlined />,
@@ -53,10 +53,16 @@ const itemsLogged: MenuItem[] = [
     icon: <UnorderedListOutlined />,
   },
   {
-    key: 'favoritos',
+    key: 'favorites',
     label: 'Favoritos',
     type: 'item',
     icon: <StarOutlined />,
+  },
+  {
+    key: 'profile',
+    label: 'Perfil',
+    type: 'item',
+    icon: <UserOutlined />,
   },
   {
     key: 'logout',
@@ -69,16 +75,18 @@ const itemsLogged: MenuItem[] = [
 
 const getRoute = (pathname: string): RouteInfo => {
   switch (pathname) {
-    case '/home':
-      return { title: 'Home', menuKey: 'home' };
+    case '/':
+      return { title: 'Início', menuKey: '' };
     case '/login':
       return { title: 'Entrar', menuKey: 'login' };
     case '/register':
       return { title: 'Registar', menuKey: 'register' };
     case '/startups':
       return { title: 'Startups', menuKey: 'startups' };
-    case '/favoritos':
+    case '/favorites':
       return { title: 'Favoritos', menuKey: 'favoritos' };
+    case '/profile':
+      return { title: 'Perfil', menuKey: 'profile' };
     case '/logout':
       return { title: 'Logout', menuKey: 'logout' };
     case '/_error':

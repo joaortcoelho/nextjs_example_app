@@ -1,8 +1,16 @@
 // pages/api/startups.ts
 import { getCookie } from 'cookies-next';
 
-export default async function favoritosHandler(token: string, userId: number) {
+export interface Favorite {
+  id_utilizador: number;
+  id_startup: number;
+}
+
+export default async function favoritosHandler(userId: number) {
   try {
+    const token = getCookie('token');
+    if (!token) throw new Error('Token not found!');
+
     const response = await fetch(`http://localhost:8080/utilizadores/${userId}/favoritos`, {
       method: 'GET',
       headers: {
@@ -11,7 +19,9 @@ export default async function favoritosHandler(token: string, userId: number) {
       },
     });
 
-    if (response.ok) return await response.json();
+    if (!response.ok) return [];
+
+    return await response.json();
   } catch (error) {
     console.log(error);
   }
