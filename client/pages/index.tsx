@@ -12,12 +12,12 @@ const Home: React.FC = () => {
       <div className="Home">
         {useSession().isLoggedIn ? (
           <>
-            <Title level={2}>Bem-vindo, {getCookie('username')}.</Title>
+            <Title level={3}>Bem-vindo, {getCookie('username')}.</Title>
             <Divider />
           </>
         ) : (
           <>
-            <Title>Bem-vindo!</Title>
+            <Title level={3}>Bem-vindo!</Title>
             <Divider />
           </>
         )}

@@ -3,8 +3,9 @@ import { getCookie } from 'cookies-next';
 import React, { useEffect, useState } from 'react';
 import startupsHandler, { Startup } from './api/startups';
 import { addFavoritoHandler } from './api/favorites';
-import { StarOutlined } from '@ant-design/icons';
+import { EditOutlined, StarOutlined } from '@ant-design/icons';
 import { useSession } from '@/context/session';
+import Paragraph from 'antd/es/skeleton/Paragraph';
 
 const { Title } = Typography;
 
@@ -53,18 +54,21 @@ const Startups: React.FC = () => {
     fetchData();
   }, []);
 
-  const updateHandler = async (startupName: string, startupId: number) => {
+  const favoriteHandler = async (startupName: string, startupId: number) => {
     try {
-      let response = await addFavoritoHandler(Number(userId), startupId);
-      if (response.success) {
+      const response = await addFavoritoHandler(Number(userId), startupId);
+      if (response === 200) {
         addFavMsg(startupName);
-      } else {
+      }
+      if (response === 500) {
         warnFavMsg(startupName);
       }
     } catch (error) {
       console.error('Error adding favorite:', error); // Debugging statement
     }
   };
+
+  const editHandler = async () => {};
 
   if (loading) return <Spin />;
   if (error) return <Alert message="Error" description="Failed to load data." type="error" showIcon />;
@@ -73,7 +77,7 @@ const Startups: React.FC = () => {
     <>
       {contextHolder}
       <div className="Startups">
-        <Title>Startups</Title>
+        <Title level={3}>Startups</Title>
       </div>
       <Divider />
       <List
@@ -82,13 +86,14 @@ const Startups: React.FC = () => {
         locale={{ emptyText: 'Não existem startups.' }}
         renderItem={(item) => (
           <List.Item>
-            <Card title={item.nome}>
-              <Button
-                icon={<StarOutlined />}
-                onClick={async () => {
-                  updateHandler(item.nome, item.id);
-                }}
-              />
+            <Card
+              title={item.nome}
+              actions={[
+                <StarOutlined key={'favorite'} onClick={() => favoriteHandler(item.nome, item.id)} />,
+                <EditOutlined key={'edit'} />,
+              ]}
+            >
+              <p>ID: {item.id}</p>
             </Card>
           </List.Item>
         )}

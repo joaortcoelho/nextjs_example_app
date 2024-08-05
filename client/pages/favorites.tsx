@@ -64,7 +64,7 @@ const Favoritos: React.FC = () => {
 
   const updateHandler = async (startupName: string, startupId: number) => {
     try {
-      await rmFavoritoHandler(Number(getCookie('userId')), startupId);
+      await rmFavoritoHandler(Number(userId), startupId);
       rmFavMsg(startupName);
       // Remove the favorite from the data list
       setData((prevData) => prevData.filter((item) => item.id !== startupId));
@@ -81,7 +81,7 @@ const Favoritos: React.FC = () => {
     <>
       {contextHolder}
       <div className="Favoritos">
-        <Title>Favoritos</Title>
+        <Title level={3}>Favoritos</Title>
       </div>
       <Divider />
       <List

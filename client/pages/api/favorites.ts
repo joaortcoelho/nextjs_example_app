@@ -41,7 +41,7 @@ export async function addFavoritoHandler(userId: number, startupId: number) {
       body: JSON.stringify({}),
     });
 
-    if (response.status) return await response.json();
+    if (response.status) return response.status;
   } catch (error) {
     console.log(error);
   }
@@ -61,7 +61,7 @@ export async function rmFavoritoHandler(userId: number, startupId: number) {
       body: JSON.stringify({}),
     });
 
-    if (response.ok) return await response.json();
+    if (response) return response.status;
   } catch (error) {
     console.log(error);
   }

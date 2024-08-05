@@ -13,11 +13,11 @@ const Profile: React.FC = () => {
     <>
       <div className="Home">
         <>
-          <Title level={2}>Perfil</Title>
+          <Title level={3}>Perfil</Title>
           <Divider />
-          <Title level={5}>Utilizador: {getCookie('username')}</Title>
-          <Title level={5}>Id: {user.userId}</Title>
-          <Title level={5}>Role: {user.userRole}</Title>
+          <Title level={5}>Utilizador</Title> {getCookie('username')}
+          <Title level={5}>Id</Title> {user.userId}
+          <Title level={5}>Role</Title> {user.userRole}
         </>
       </div>
     </>
