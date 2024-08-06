@@ -81,9 +81,8 @@ export async function updateStartupHandler(startupId: number, newName: string) {
       headers: {
         'Content-Type': 'application/json',
         Authorization: token,
-        nome: newName,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ nome: newName }),
     });
 
     if (response.ok) {

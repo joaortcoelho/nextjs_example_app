@@ -1,5 +1,18 @@
-import { Alert, Button, Card, Divider, Flex, Input, List, message, Modal, Space, Spin, Typography } from 'antd';
-import { getCookie } from 'cookies-next';
+import {
+  Alert,
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Input,
+  List,
+  message,
+  Modal,
+  Spin,
+  Typography,
+  Popconfirm,
+  PopconfirmProps,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import startupsHandler, {
   addStartupHandler,
@@ -78,6 +91,8 @@ const Startups: React.FC = () => {
       const response = await updateStartupHandler(startupId, newStartupName);
       if (response === 200) {
         messageApi.success(`Startup atualizada com sucesso!`);
+        setStartupName('');
+        setData(await startupsHandler());
       } else {
         messageApi.error(`Não foi possível atualizar a startup!`);
       }
@@ -90,7 +105,7 @@ const Startups: React.FC = () => {
     try {
       const response = await deleteStartupHandler(startupId);
       if (response === 200) {
-        setData((prevData) => prevData.filter((item) => item.id !== startupId));
+        setData(await startupsHandler());
         messageApi.success(`Startup eliminada com sucesso!`);
       } else {
         messageApi.error(`Não foi possível eliminar a startup!`);
@@ -128,7 +143,17 @@ const Startups: React.FC = () => {
                 actions={[
                   <StarOutlined key={'favorite'} onClick={() => favoriteHandler(item.nome, item.id)} />,
                   userRole === 'admin' && <EditOutlined key={'edit'} onClick={() => setIsUpdateModalOpen(true)} />,
-                  userRole === 'admin' && <DeleteOutlined key={'delete'} onClick={() => deleteHandler(item.id)} />,
+                  userRole === 'admin' && (
+                    <Popconfirm
+                      title="Eliminar startup"
+                      description={`Tem a certeza que deseja eliminar ${item.nome}?`}
+                      onConfirm={() => deleteHandler(item.id)}
+                      okText="Sim"
+                      cancelText="Não"
+                    >
+                      <DeleteOutlined key={'delete'} />
+                    </Popconfirm>
+                  ),
                 ]}
               >
                 <p>ID: {item.id}</p>
