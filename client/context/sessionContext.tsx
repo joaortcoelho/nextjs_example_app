@@ -24,6 +24,17 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [userRole, setUserRole] = useState<string>(String);
   const [username, setUsername] = useState<string>(String);
 
+  const setProfile = async () => {
+    if (getCookie('token')) {
+      const profile = await profileHandler();
+      setUserRole(profile.role);
+      setUserId(profile.id);
+      setUsername(profile.username);
+    } else {
+      console.error('Cannot set Profile without token');
+    }
+  };
+
   // Login handler
   const setLogin = async (values: any) => {
     try {
@@ -47,12 +58,8 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
           setCookie('rememberMe', 'false', { maxAge: 60 * 60 * 24 });
         }
 
-        // Set Profile data after login success
-        const profile = await profileHandler();
         setIsLoggedIn(true);
-        setUserRole(profile.role);
-        setUserId(profile.id);
-        setUsername(profile.username);
+        setProfile();
       } else {
         // handle login failure
         console.error(data.error);
@@ -79,8 +86,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   useEffect(() => {
     if (getCookie('token') !== null) {
       setIsLoggedIn(true);
-      setUserId(userId);
-      setUserRole(userRole);
+      setProfile();
     }
   }, [userId, userRole]);
 

@@ -9,7 +9,7 @@ import startupsHandler, {
 } from './api/startups';
 import { addFavoritoHandler } from './api/favorites';
 import { DeleteOutlined, EditOutlined, PlusOutlined, StarOutlined } from '@ant-design/icons';
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 
 const { Title } = Typography;
 

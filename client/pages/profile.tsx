@@ -1,4 +1,4 @@
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 import { Divider, Typography } from 'antd';
 
 import React from 'react';

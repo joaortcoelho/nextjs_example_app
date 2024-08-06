@@ -84,7 +84,7 @@ const getRoute = (pathname: string): RouteInfo => {
     case '/startups':
       return { title: 'Startups', menuKey: 'startups' };
     case '/favorites':
-      return { title: 'Favoritos', menuKey: 'favoritos' };
+      return { title: 'Favoritos', menuKey: 'favorites' };
     case '/profile':
       return { title: 'Perfil', menuKey: 'profile' };
     case '/logout':
