@@ -24,9 +24,9 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [userRole, setUserRole] = useState<string>(String);
   const [username, setUsername] = useState<string>(String);
 
+  // Login handler
   const setLogin = async (values: any) => {
     try {
-      // Login handler
       const loginHandler = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -46,23 +46,24 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
         } else {
           setCookie('rememberMe', 'false', { maxAge: 60 * 60 * 24 });
         }
+
+        // Set Profile data after login success
+        const profile = await profileHandler();
+        setIsLoggedIn(true);
+        setUserRole(profile.role);
+        setUserId(profile.id);
+        setUsername(profile.username);
       } else {
         // handle login failure
         console.error(data.error);
         message.error('Autenticação inválida. Por favor verifique o seu nome de utilizador e a sua palavra-passe.');
       }
-
-      // Set Profile data
-      const profile = await profileHandler();
-      setIsLoggedIn(true);
-      setUserRole(profile.role);
-      setUserId(profile.id);
-      setUsername(profile.username);
     } catch (error) {
       console.error('Failed to login', error);
     }
   };
 
+  // Logout handler
   const setLogout = async () => {
     try {
       setIsLoggedIn(false);
