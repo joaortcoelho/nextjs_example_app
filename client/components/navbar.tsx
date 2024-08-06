@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, Image } from 'antd';
 import { useRouter } from 'next/router';
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 import {
   LoginOutlined,
   UserOutlined,

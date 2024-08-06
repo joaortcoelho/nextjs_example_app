@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import { Breadcrumb, Button, Checkbox, Divider, Form, FormProps, Input, message } from 'antd';
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
-import { setCookie, getCookie, deleteCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next';
 
 type FieldType = {
   username?: string;
@@ -13,51 +13,23 @@ type FieldType = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const session = useSession();
+  const { setLogin } = useSession();
   const [form] = useForm();
 
   useEffect(() => {
     const user = getCookie('username');
-    const rememberMe = getCookie('rememberMe') === 'true';
+    const rememberMe = getCookie('rememberMe');
 
-    if (rememberMe) {
+    if (rememberMe === 'true') {
       form.setFieldsValue({ username: user, remember: rememberMe });
     }
   }, [form]);
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: any) => {
     try {
-      const { username, password, remember } = values;
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          username: username,
-          password: password,
-        },
-        body: JSON.stringify({}),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setCookie('token', data.token, { maxAge: 60 * 60 * 24, secure: true, path: '/', sameSite: 'strict' });
-        session.setLogin(data);
-
-        if (remember) {
-          setCookie('rememberMe', 'true', { maxAge: 60 * 60 * 24 });
-          setCookie('username', username, { maxAge: 60 * 60 * 24 });
-        } else {
-          deleteCookie('rememberMe');
-        }
-
-        router.push('/');
-      } else {
-        // handle login failure
-        console.error(data.error);
-        message.error('Autenticação inválida. Por favor verifique o seu nome de utilizador e a sua palavra-passe.');
-      }
+      // call sessionContext: setLogin
+      setLogin(values);
+      router.push('/');
     } catch (error) {
       console.error('Could not fetch data.', error);
       message.error('Ocorreu um erro na autenticação. Tente novamente.');

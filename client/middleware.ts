@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isLoggedIn && request.nextUrl.pathname === '/login') {
+  if (isLoggedIn && request.nextUrl.pathname === ('/login' || '/register')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

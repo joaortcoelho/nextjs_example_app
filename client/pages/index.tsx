@@ -1,18 +1,17 @@
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 import { Divider, Typography } from 'antd';
-
 import React from 'react';
-import { getCookie } from 'cookies-next';
 
 const { Title } = Typography;
 
 const Home: React.FC = () => {
+  const { username } = useSession();
   return (
     <>
       <div className="Home">
         {useSession().isLoggedIn ? (
           <>
-            <Title level={3}>Bem-vindo, {getCookie('username')}.</Title>
+            <Title level={3}>Bem-vindo, {username}.</Title>
             <Divider />
           </>
         ) : (

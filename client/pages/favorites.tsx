@@ -1,10 +1,9 @@
-import { Alert, Button, Card, Divider, List, message, Spin, Typography } from 'antd';
-import { getCookie } from 'cookies-next';
+import { Alert, Card, Divider, List, message, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Startup, startupByIdHandler } from './api/startups';
 import favoritosHandler, { Favorite, rmFavoritoHandler } from './api/favorites';
 import { DeleteOutlined } from '@ant-design/icons';
-import { useSession } from '@/context/session';
+import { useSession } from '@/context/sessionContext';
 
 const { Title } = Typography;
 
