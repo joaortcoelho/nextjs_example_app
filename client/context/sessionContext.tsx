@@ -85,8 +85,12 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   // keep user loggedIn on new Session if he didnt loggedOut
   useEffect(() => {
     if (getCookie('token') !== null) {
+      // keep user loggedIn on new Session if he didnt loggedOut
       setIsLoggedIn(true);
       setProfile();
+    } else {
+      // if user didnt loggedIn set to false
+      setIsLoggedIn(false);
     }
   }, [userId, userRole]);
 
