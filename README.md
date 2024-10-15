@@ -1,4 +1,4 @@
-# ReactNext with Typescript Project
+# Next.js/React with Typescript App
 
 João Coelho - Internship 2024
 
